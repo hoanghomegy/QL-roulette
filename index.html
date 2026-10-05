@@ -28,16 +28,17 @@
 
     .session-panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
     .control-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
-    .input-box { flex: 1; min-width: 130px; }
+    .input-box { flex: 1; min-width: 120px; }
     label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
     input { width: 100%; padding: 10px; background: #0b0f19; border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 15px; font-weight: bold; }
     
-    button { height: 42px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; padding: 0 16px; font-size: 14px; }
+    button { height: 42px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; padding: 0 14px; font-size: 13px; }
     .btn-submit { background: #2563eb; color: #fff; }
     .btn-session-end { background: #e11d48; color: #fff; }
     .btn-export { background: #059669; color: #fff; }
+    .btn-reset-session { background: #475569; color: #fff; }
 
-    .limit-info { margin-top: 8px; font-size: 12px; color: #94a3b8; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .limit-info { margin-top: 10px; font-size: 12px; color: #94a3b8; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; border-top: 1px solid #1e293b; padding-top: 8px; }
 
     .banner-recommend { 
       display: none; 
@@ -81,7 +82,7 @@
 <div class="container">
   <div class="dashboard-grid">
     <div class="stat-card">
-      <div class="stat-label">HÔM NAY (3 PHIÊN)</div>
+      <div class="stat-label" id="todayHeaderLabel">HÔM NAY (PHIÊN)</div>
       <div class="stat-val" id="todaySessionsDisplay">0 / 3 Phiên</div>
     </div>
     <div class="stat-card">
@@ -100,21 +101,26 @@
 
   <div class="session-panel">
     <div class="control-row">
-      <div class="input-box" style="max-width: 120px;">
+      <div class="input-box" style="max-width: 100px;">
         <label>Vốn cơ sở ($)</label>
         <input type="number" id="baseUnit" value="1" min="0.5" step="0.5" onchange="capNhatBaseUnit()">
       </div>
-      <div class="input-box" style="max-width: 140px;">
+      <div class="input-box" style="max-width: 110px;">
+        <label>Số phiên/ngày</label>
+        <input type="number" id="maxSessionInput" value="3" min="1" max="20" onchange="capNhatMaxSessions()">
+      </div>
+      <div class="input-box" style="max-width: 130px;">
         <label>Phiên hiện tại</label>
         <input type="text" id="curSessionInfo" value="Phiên 1 / 3" readonly style="color: #38bdf8; background: #1e293b;">
       </div>
-      <div class="input-box" style="max-width: 140px;">
-        <label>Nhập số vừa ra (0-36)</label>
+      <div class="input-box" style="max-width: 130px;">
+        <label>Nhập số (0-36)</label>
         <input type="number" id="inputNumber" placeholder="Số..." min="0" max="36" autofocus>
       </div>
       <button class="btn-submit" onclick="nhapSo()">XÁC NHẬN SỐ</button>
-      <button class="btn-session-end" onclick="ketThucPhien()">CHỐT PHIÊN NÀY</button>
-      <button class="btn-export" onclick="xuatExcelChiTiet()">XUẤT EXCEL CHI TIẾT (.XLS)</button>
+      <button class="btn-session-end" onclick="ketThucPhien()">CHỐT PHIÊN</button>
+      <button class="btn-export" onclick="xuatExcelChiTiet()">XUẤT EXCEL (.XLS)</button>
+      <button class="btn-reset-session" onclick="resetPhienHomNay()" title="Xóa số phiên đã đánh hôm nay để chơi tiếp">RESET HÔM NAY</button>
     </div>
     <div class="limit-info">
       <span>🛑 <strong>Cắt lỗ 1 Player (Bước 14):</strong> <span id="singleLossLimit" style="color: #ef4444; font-weight: bold;">-85$</span></span>
@@ -215,15 +221,16 @@ let baseUnit = 1;
 let currentRound = 0;
 let evaluatedRounds = 0;
 
+// Cài đặt số phiên tối đa hôm nay (mặc định là 3)
+let maxSessionsPerDay = parseInt(localStorage.getItem("roulette_max_sessions") || "3");
+
 function initPlayer() {
   return { buoc: 1, lenh: 1, net: 0, target: null, betAmt: 1, msg: "Sẵn sàng", stopped: false };
 }
 
 let p1 = initPlayer(), p2 = initPlayer(), p3 = initPlayer();
 
-// Dữ liệu lưu trữ tổng thể
 let db = JSON.parse(localStorage.getItem("roulette_history_db") || "[]");
-// Dữ liệu lưu chi tiết từng ván của các phiên
 let roundLogs = JSON.parse(localStorage.getItem("roulette_round_logs") || "[]");
 
 function getTodayStr() {
@@ -248,6 +255,18 @@ function capNhatBaseUnit() {
   p1.betAmt = tinhTien(p1);
   p2.betAmt = tinhTien(p2);
   p3.betAmt = tinhTien(p3);
+  renderUI();
+}
+
+function capNhatMaxSessions() {
+  const val = parseInt(document.getElementById("maxSessionInput").value);
+  if (isNaN(val) || val < 1) {
+    alert("Số phiên mỗi ngày phải ít nhất là 1!");
+    document.getElementById("maxSessionInput").value = maxSessionsPerDay;
+    return;
+  }
+  maxSessionsPerDay = val;
+  localStorage.setItem("roulette_max_sessions", maxSessionsPerDay.toString());
   renderUI();
 }
 
@@ -370,15 +389,15 @@ function transitionStep(p, win) {
 
 function nhapSo() {
   const countToday = getTodaySessionsCount();
-  if (countToday >= 3) {
-    alert("KỶ LUẬT: Bạn đã đánh đủ 3 phiên trong ngày! Hãy nghỉ ngơi.");
+  if (countToday >= maxSessionsPerDay) {
+    alert(`KỶ LUẬT: Hôm nay bạn đã đạt đủ giới hạn ${maxSessionsPerDay} phiên đã cài đặt! Hãy nghỉ ngơi để bảo vệ vốn.`);
     return;
   }
 
   const inp = document.getElementById("inputNumber");
   const val = inp.value.trim();
   if (val === "" || isNaN(val) || parseInt(val) < 0 || parseInt(val) > 36) {
-    alert("Vui lòng nhập số từ 0 đến 36!");
+    alert("Vui lòng nhập số hợp lệ từ 0 đến 36!");
     return;
   }
   const n = parseInt(val);
@@ -395,7 +414,6 @@ function nhapSo() {
   let winCountInRound = 0;
   let loseCountInRound = 0;
 
-  // Bản ghi nhật ký chi tiết cho ván này
   const roundLogItem = {
     date: getTodayStr(),
     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
@@ -428,7 +446,6 @@ function nhapSo() {
           loseCountInRound++;
         }
 
-        // Lưu thông tin ván của player này
         roundLogItem[pKey] = {
           target: pl.target,
           gd: gdBefore,
@@ -502,8 +519,8 @@ function ketThucPhien() {
     return;
   }
   const countToday = getTodaySessionsCount();
-  if (countToday >= 3) {
-    alert("Hôm nay đã hoàn thành đủ 3 phiên.");
+  if (countToday >= maxSessionsPerDay) {
+    alert(`Hôm nay bạn đã hoàn thành đủ ${maxSessionsPerDay} phiên đã cài đặt.`);
     return;
   }
 
@@ -536,10 +553,44 @@ function ketThucPhien() {
   renderUI();
 }
 
+// NÚT RESET SỐ PHIÊN HÔM NAY ĐỂ MỞ THÊM PHIÊN MỚI
+function resetPhienHomNay() {
+  const countToday = getTodaySessionsCount();
+  if (countToday === 0) {
+    alert("Hôm nay chưa có phiên nào được ghi nhận!");
+    return;
+  }
+  if (!confirm(`Bạn có chắc muốn RESET ${countToday} phiên đã đánh hôm nay để bắt đầu lại từ Phiên 1? (Dữ liệu các ngày trước vẫn được bảo lưu)`)) {
+    return;
+  }
+
+  const todayStr = getTodayStr();
+  // Xóa các phiên hôm nay trong db
+  db = db.filter(item => item.date !== todayStr);
+  localStorage.setItem("roulette_history_db", JSON.stringify(db));
+
+  // Xóa nhật ký ván của hôm nay
+  roundLogs = roundLogs.filter(item => item.date !== todayStr);
+  localStorage.setItem("roulette_round_logs", JSON.stringify(roundLogs));
+
+  currentRound = 0;
+  evaluatedRounds = 0;
+  p1 = initPlayer();
+  p2 = initPlayer();
+  p3 = initPlayer();
+  capNhatBaseUnit();
+  document.getElementById("firstRoundBanner").style.display = "none";
+
+  alert("Đã reset số phiên hôm nay về 0! Bạn có thể bắt đầu lại từ Phiên 1.");
+  renderUI();
+}
+
 function renderUI() {
   const countToday = getTodaySessionsCount();
-  document.getElementById("todaySessionsDisplay").textContent = `${countToday} / 3 Phiên`;
-  document.getElementById("curSessionInfo").value = countToday >= 3 ? "ĐÃ HẾT 3 PHIÊN" : `Phiên ${countToday + 1} / 3`;
+  document.getElementById("maxSessionInput").value = maxSessionsPerDay;
+  document.getElementById("todayHeaderLabel").textContent = `HÔM NAY (${maxSessionsPerDay} PHIÊN)`;
+  document.getElementById("todaySessionsDisplay").textContent = `${countToday} / ${maxSessionsPerDay} Phiên`;
+  document.getElementById("curSessionInfo").value = countToday >= maxSessionsPerDay ? `ĐÃ HẾT ${maxSessionsPerDay} PHIÊN` : `Phiên ${countToday + 1} / ${maxSessionsPerDay}`;
 
   const todayStr = getTodayStr();
   const monthStr = getCurMonthStr();
@@ -635,7 +686,6 @@ function renderCard(prefix, p) {
   }
 }
 
-// XUẤT BẢNG EXCEL .XLS CHUẨN ĐẸP 100%, PHÂN TÁCH CỘT RÕ RÀNG CHO 3 NGƯỜI CHƠI
 function xuatExcelChiTiet() {
   if (roundLogs.length === 0) {
     alert("Chưa có ván nào có dữ liệu chi tiết để xuất!");
@@ -675,7 +725,6 @@ function xuatExcelChiTiet() {
           <th>Ván</th>
           <th>Số ra</th>
 
-          <!-- P1 -->
           <th>Cửa vào</th>
           <th>GĐ</th>
           <th>Bước</th>
@@ -684,7 +733,6 @@ function xuatExcelChiTiet() {
           <th>Kết quả</th>
           <th>Lũy kế P1 ($)</th>
 
-          <!-- P2 -->
           <th>Cửa vào</th>
           <th>GĐ</th>
           <th>Bước</th>
@@ -693,7 +741,6 @@ function xuatExcelChiTiet() {
           <th>Kết quả</th>
           <th>Lũy kế P2 ($)</th>
 
-          <!-- P3 -->
           <th>Cửa vào</th>
           <th>GĐ</th>
           <th>Bước</th>
@@ -702,7 +749,6 @@ function xuatExcelChiTiet() {
           <th>Kết quả</th>
           <th>Lũy kế P3 ($)</th>
 
-          <!-- Tổng kết -->
           <th>Lãi/Lỗ ván này ($)</th>
           <th>Tổng số dư ($)</th>
         </tr>
@@ -724,7 +770,6 @@ function xuatExcelChiTiet() {
         <td>${r.round}</td>
         <td style="font-weight:bold; font-size:12pt;">${r.num}</td>
 
-        <!-- P1 -->
         <td>${r.p1.target || '-'}</td>
         <td>${r.p1.gd || '-'}</td>
         <td>${r.p1.buoc || '-'}</td>
@@ -733,7 +778,6 @@ function xuatExcelChiTiet() {
         <td class="${r.p1.result === 'WIN' ? 'win-cell' : (r.p1.result === 'LOSE' ? 'lose-cell' : '')}">${r.p1.result || '-'}</td>
         <td style="font-weight:bold;" class="${(r.p1.cumNet || 0) >= 0 ? 'win-cell' : 'lose-cell'}">${r.p1.cumNet || 0}$</td>
 
-        <!-- P2 -->
         <td>${r.p2.target || '-'}</td>
         <td>${r.p2.gd || '-'}</td>
         <td>${r.p2.buoc || '-'}</td>
@@ -742,7 +786,6 @@ function xuatExcelChiTiet() {
         <td class="${r.p2.result === 'WIN' ? 'win-cell' : (r.p2.result === 'LOSE' ? 'lose-cell' : '')}">${r.p2.result || '-'}</td>
         <td style="font-weight:bold;" class="${(r.p2.cumNet || 0) >= 0 ? 'win-cell' : 'lose-cell'}">${r.p2.cumNet || 0}$</td>
 
-        <!-- P3 -->
         <td>${r.p3.target || '-'}</td>
         <td>${r.p3.gd || '-'}</td>
         <td>${r.p3.buoc || '-'}</td>
@@ -751,7 +794,6 @@ function xuatExcelChiTiet() {
         <td class="${r.p3.result === 'WIN' ? 'win-cell' : (r.p3.result === 'LOSE' ? 'lose-cell' : '')}">${r.p3.result || '-'}</td>
         <td style="font-weight:bold;" class="${(r.p3.cumNet || 0) >= 0 ? 'win-cell' : 'lose-cell'}">${r.p3.cumNet || 0}$</td>
 
-        <!-- Tổng ván -->
         <td style="font-weight:bold;" class="${roundNet >= 0 ? 'win-cell' : 'lose-cell'}">${roundNet > 0 ? '+' : ''}${roundNet}$</td>
         <td style="font-weight:bold; background-color:#f8fafc;" class="${totalSessionNet >= 0 ? 'win-cell' : 'lose-cell'}">${totalSessionNet > 0 ? '+' : ''}${totalSessionNet}$</td>
       </tr>
