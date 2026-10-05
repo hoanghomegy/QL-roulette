@@ -28,7 +28,7 @@
 
     .session-panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
     .control-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
-    .input-box { flex: 1; min-width: 120px; }
+    .input-box { flex: 1; min-width: 110px; }
     label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
     input { width: 100%; padding: 10px; background: #0b0f19; border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 15px; font-weight: bold; }
     
@@ -37,6 +37,39 @@
     .btn-session-end { background: #e11d48; color: #fff; }
     .btn-export { background: #059669; color: #fff; }
     .btn-reset-session { background: #475569; color: #fff; }
+
+    /* HÀNG NGANG HIỂN THỊ CHUỖI SỐ KẾT QUẢ ĐÃ NHẬP */
+    .history-stream-wrap {
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: #090d16;
+      border-radius: 8px;
+      border: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .stream-label { font-size: 12px; color: #94a3b8; font-weight: bold; text-transform: uppercase; min-width: 100px; }
+    .ball-list { display: flex; gap: 6px; align-items: center; }
+    .num-ball {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-weight: 900;
+      font-size: 14px;
+      color: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+      flex-shrink: 0;
+    }
+    .ball-red { background: linear-gradient(135deg, #ef4444, #991b1b); border: 1px solid #fca5a5; }
+    .ball-black { background: linear-gradient(135deg, #334155, #0f172a); border: 1px solid #64748b; }
+    .ball-green { background: linear-gradient(135deg, #10b981, #065f46); border: 1px solid #6ee7b7; }
+    .ball-newest { border: 2px solid #38bdf8 !important; transform: scale(1.1); animation: blink 1.2s infinite alternate; }
 
     .limit-info { margin-top: 10px; font-size: 12px; color: #94a3b8; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; border-top: 1px solid #1e293b; padding-top: 8px; }
 
@@ -60,12 +93,81 @@
     .player-card.odd-even { border-top: 4px solid #10b981; }
 
     .p-head { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 8px; }
-    .step-tag { display: inline-block; font-size: 11px; padding: 3px 6px; border-radius: 4px; background: #1e293b; color: #93c5fd; margin-bottom: 8px; font-weight: 600; }
     
-    .bet-display { background: #0b0f19; border-radius: 8px; padding: 10px; text-align: center; margin-bottom: 8px; border: 1px solid #1e293b; }
-    .bet-target { font-size: 18px; font-weight: 800; color: var(--accent); }
-    .bet-cash { font-size: 22px; font-weight: 900; color: #facc15; }
+    /* Ô BÁO VÀO LỆNH: MẶC ĐỊNH NỀN XANH - CHỮ TRẮNG TO RỰC */
+    .bet-display { 
+      border-radius: 10px; 
+      padding: 12px 10px; 
+      text-align: center; 
+      margin-bottom: 8px; 
+      transition: all 0.25s ease; 
+    }
     
+    /* TRẠNG THÁI VÀO LỆNH: NỀN XANH ĐẬM - CHỮ TRẮNG TO */
+    .bet-display.action-active {
+      background: #1d4ed8 !important;
+      border: 2px solid #93c5fd !important;
+      box-shadow: 0 0 16px rgba(29, 78, 216, 0.7);
+    }
+    .bet-display.action-active .sub-step-info {
+      color: #bfdbfe !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .bet-display.action-active .bet-target {
+      color: #ffffff !important;
+      font-size: 26px !important;
+      font-weight: 900 !important;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .bet-display.action-active .bet-cash-row {
+      margin-top: 4px;
+      color: #ffffff !important;
+      font-size: 15px !important;
+      font-weight: 800;
+    }
+    .bet-display.action-active .bet-cash-val {
+      font-size: 26px !important;
+      font-weight: 900 !important;
+      color: #fef08a !important;
+    }
+
+    /* TRẠNG THÁI DỪNG LỆNH: NỀN ĐỎ - CHỮ TRẮNG TO */
+    .bet-display.stopped-box {
+      background: #dc2626 !important;
+      border: 2px solid #ffffff !important;
+      box-shadow: 0 0 16px rgba(220, 38, 38, 0.8);
+    }
+    .bet-display.stopped-box .sub-step-info {
+      color: #fecaca !important;
+      font-size: 12px !important;
+      font-weight: 700;
+    }
+    .bet-display.stopped-box .bet-target {
+      color: #ffffff !important;
+      font-size: 25px !important;
+      font-weight: 900 !important;
+    }
+    .bet-display.stopped-box .bet-cash-row {
+      color: #fee2e2 !important;
+      font-size: 14px !important;
+      font-weight: bold;
+    }
+
+    /* TRẠNG THÁI CHỜ VÁN MỒI BAN ĐẦU */
+    .bet-display.waiting-box {
+      background: #0b0f19;
+      border: 1px solid #1e293b;
+    }
+    .bet-display.waiting-box .bet-target {
+      color: #94a3b8;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
     .msg-box { font-size: 12px; min-height: 34px; padding: 6px; border-radius: 6px; line-height: 1.3; }
     .msg-warn { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
     .msg-win { background: rgba(16, 185, 129, 0.15); color: #34d399; }
@@ -75,6 +177,11 @@
     table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; margin-top: 8px; }
     th { background: #1e293b; color: #94a3b8; padding: 8px; font-weight: 600; }
     td { padding: 8px; border-bottom: 1px solid #1e293b; }
+
+    @keyframes blink {
+      0% { opacity: 0.8; }
+      100% { opacity: 1; box-shadow: 0 0 10px #38bdf8; }
+    }
   </style>
 </head>
 <body>
@@ -122,6 +229,15 @@
       <button class="btn-export" onclick="xuatExcelChiTiet()">XUẤT EXCEL (.XLS)</button>
       <button class="btn-reset-session" onclick="resetPhienHomNay()" title="Xóa số phiên đã đánh hôm nay để chơi tiếp">RESET HÔM NAY</button>
     </div>
+
+    <!-- DẢI HÀNG NGANG CÁC SỐ VỪA NHẬP (YÊU CẦU 1) -->
+    <div class="history-stream-wrap">
+      <div class="stream-label">DÃY SỐ VỪA RA:</div>
+      <div class="ball-list" id="ballStream">
+        <span style="color: #64748b; font-size: 13px;">Chưa có số nào được nhập</span>
+      </div>
+    </div>
+
     <div class="limit-info">
       <span>🛑 <strong>Cắt lỗ 1 Player (Bước 14):</strong> <span id="singleLossLimit" style="color: #ef4444; font-weight: bold;">-85$</span></span>
       <span>🛑 <strong>Giới hạn thua tối đa cả phiên (3 Player cùng gãy):</strong> <span id="totalLossLimit" style="color: #ef4444; font-weight: bold;">-255$</span></span>
@@ -137,11 +253,10 @@
         <span>P1: ĐỎ / ĐEN</span>
         <span id="p1Net">0$</span>
       </div>
-      <div class="step-tag" id="p1Step">GĐ 1 - Bước 1 (Lệnh 1)</div>
-      <div class="bet-display" id="p1Box">
-        <div style="font-size: 11px; color: #94a3b8;" id="p1Label">CỬA VÀO & TIỀN CƯỢC:</div>
+      <div class="bet-display waiting-box" id="p1Box">
+        <div class="sub-step-info" id="p1StepText">GĐ 1 - BƯỚC 1 (LỆNH 1)</div>
         <div class="bet-target" id="p1Action">CHỜ VÁN MỒI</div>
-        <div class="bet-cash" id="p1Bet">1$</div>
+        <div class="bet-cash-row">TIỀN VÀO: <span class="bet-cash-val" id="p1Bet">1$</span></div>
       </div>
       <div class="msg-box msg-warn" id="p1Msg">Nhập số đầu tiên để bắt đầu bắt nhịp cầu.</div>
     </div>
@@ -152,11 +267,10 @@
         <span>P2: NHỎ / TO</span>
         <span id="p2Net">0$</span>
       </div>
-      <div class="step-tag" id="p2Step">GĐ 1 - Bước 1 (Lệnh 1)</div>
-      <div class="bet-display" id="p2Box">
-        <div style="font-size: 11px; color: #94a3b8;" id="p2Label">CỬA VÀO & TIỀN CƯỢC:</div>
+      <div class="bet-display waiting-box" id="p2Box">
+        <div class="sub-step-info" id="p2StepText">GĐ 1 - BƯỚC 1 (LỆNH 1)</div>
         <div class="bet-target" id="p2Action">CHỜ VÁN MỒI</div>
-        <div class="bet-cash" id="p2Bet">1$</div>
+        <div class="bet-cash-row">TIỀN VÀO: <span class="bet-cash-val" id="p2Bet">1$</span></div>
       </div>
       <div class="msg-box msg-warn" id="p2Msg">Nhập số đầu tiên để bắt đầu bắt nhịp cầu.</div>
     </div>
@@ -167,11 +281,10 @@
         <span>P3: LẺ / CHẴN</span>
         <span id="p3Net">0$</span>
       </div>
-      <div class="step-tag" id="p3Step">GĐ 1 - Bước 1 (Lệnh 1)</div>
-      <div class="bet-display" id="p3Box">
-        <div style="font-size: 11px; color: #94a3b8;" id="p3Label">CỬA VÀO & TIỀN CƯỢC:</div>
+      <div class="bet-display waiting-box" id="p3Box">
+        <div class="sub-step-info" id="p3StepText">GĐ 1 - BƯỚC 1 (LỆNH 1)</div>
         <div class="bet-target" id="p3Action">CHỜ VÁN MỒI</div>
-        <div class="bet-cash" id="p3Bet">1$</div>
+        <div class="bet-cash-row">TIỀN VÀO: <span class="bet-cash-val" id="p3Bet">1$</span></div>
       </div>
       <div class="msg-box msg-warn" id="p3Msg">Nhập số đầu tiên để bắt đầu bắt nhịp cầu.</div>
     </div>
@@ -220,8 +333,8 @@ const RED_NUMS = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
 let baseUnit = 1;
 let currentRound = 0;
 let evaluatedRounds = 0;
+let enteredNumbersHistory = []; // Lưu chuỗi các số vừa nhập trong phiên hiện tại
 
-// Cài đặt số phiên tối đa hôm nay (mặc định là 3)
 let maxSessionsPerDay = parseInt(localStorage.getItem("roulette_max_sessions") || "3");
 
 function initPlayer() {
@@ -390,7 +503,7 @@ function transitionStep(p, win) {
 function nhapSo() {
   const countToday = getTodaySessionsCount();
   if (countToday >= maxSessionsPerDay) {
-    alert(`KỶ LUẬT: Hôm nay bạn đã đạt đủ giới hạn ${maxSessionsPerDay} phiên đã cài đặt! Hãy nghỉ ngơi để bảo vệ vốn.`);
+    alert(`KỶ LUẬT: Hôm nay bạn đã đạt đủ giới hạn ${maxSessionsPerDay} phiên đã cài đặt! Hãy nghỉ ngơi.`);
     return;
   }
 
@@ -403,6 +516,10 @@ function nhapSo() {
   const n = parseInt(val);
   const info = phanLoai(n);
   currentRound++;
+
+  // Thêm số vào hàng ngang dãy số (số mới nhất ở đầu mảng)
+  enteredNumbersHistory.unshift(n);
+  renderBallStream();
 
   const list = [
     { p: p1, res: info.col, name: "P1" },
@@ -481,6 +598,24 @@ function nhapSo() {
   renderUI();
 }
 
+// HIỂN THỊ DÃY SỐ VỪA NHẬP DẠNG BÓNG TRÒN ROULETTE HÀNG NGANG
+function renderBallStream() {
+  const container = document.getElementById("ballStream");
+  if (enteredNumbersHistory.length === 0) {
+    container.innerHTML = '<span style="color: #64748b; font-size: 13px;">Chưa có số nào được nhập</span>';
+    return;
+  }
+
+  container.innerHTML = enteredNumbersHistory.map((num, idx) => {
+    let colorClass = "ball-black";
+    if (num === 0) colorClass = "ball-green";
+    else if (RED_NUMS.includes(num)) colorClass = "ball-red";
+
+    const isNewest = idx === 0 ? "ball-newest" : "";
+    return `<div class="num-ball ${colorClass} ${isNewest}" title="Số ${num}">${num}</div>`;
+  }).join("");
+}
+
 function kiemTraCanhBaoDacBiet(winCount, loseCount) {
   const banner = document.getElementById("firstRoundBanner");
   if (evaluatedRounds === 1) {
@@ -490,7 +625,7 @@ function kiemTraCanhBaoDacBiet(winCount, loseCount) {
       banner.className = "banner-recommend banner-win-stop";
       banner.innerHTML = `
         🔔 <strong>TÍN HIỆU VÀNG Ở LỆNH ĐẦU:</strong> Có <strong>2 Player WIN và 1 Player LOSE</strong>!<br>
-        Tài khoản đang <strong>DƯƠNG +${netTotal}$</strong> (+1 Unit). Bạn có thể bấm nút <strong>[CHỐT PHIÊN NÀY]</strong> để STOP ngay bảo toàn lãi!
+        Tài khoản đang <strong>DƯƠNG +${netTotal}$</strong> (+1 Unit). Bạn có thể bấm nút <strong>[CHỐT PHIÊN]</strong> để STOP ngay bảo toàn lãi!
       `;
     } else if (loseCount >= 2) {
       banner.style.display = "block";
@@ -502,13 +637,13 @@ function kiemTraCanhBaoDacBiet(winCount, loseCount) {
     } else if (winCount === 3) {
       banner.style.display = "block";
       banner.className = "banner-recommend banner-win-stop";
-      banner.innerHTML = `🎉 <strong>TUYỆT VỜI: CẢ 3 PLAYER ĐỀU WIN (+3 Units)!</strong> Bấm nút <strong>[CHỐT PHIÊN NÀY]</strong> để dừng phiên đại thắng.`;
+      banner.innerHTML = `🎉 <strong>TUYỆT VỜI: CẢ 3 PLAYER ĐỀU WIN (+3 Units)!</strong> Bấm nút <strong>[CHỐT PHIÊN]</strong> để dừng phiên đại thắng.`;
     }
   } else {
     if (p1.stopped && p2.stopped && p3.stopped) {
       banner.style.display = "block";
       banner.className = "banner-recommend banner-win-stop";
-      banner.innerHTML = `🎯 <strong>TẤT CẢ PLAYER ĐÃ HOÀN THÀNH MỤC TIÊU!</strong> Hãy bấm nút <strong>[CHỐT PHIÊN NÀY]</strong>.`;
+      banner.innerHTML = `🎯 <strong>TẤT CẢ PLAYER ĐÃ HOÀN THÀNH MỤC TIÊU!</strong> Hãy bấm nút <strong>[CHỐT PHIÊN]</strong>.`;
     }
   }
 }
@@ -543,6 +678,9 @@ function ketThucPhien() {
 
   currentRound = 0;
   evaluatedRounds = 0;
+  enteredNumbersHistory = [];
+  renderBallStream();
+
   p1 = initPlayer();
   p2 = initPlayer();
   p3 = initPlayer();
@@ -553,28 +691,28 @@ function ketThucPhien() {
   renderUI();
 }
 
-// NÚT RESET SỐ PHIÊN HÔM NAY ĐỂ MỞ THÊM PHIÊN MỚI
 function resetPhienHomNay() {
   const countToday = getTodaySessionsCount();
   if (countToday === 0) {
     alert("Hôm nay chưa có phiên nào được ghi nhận!");
     return;
   }
-  if (!confirm(`Bạn có chắc muốn RESET ${countToday} phiên đã đánh hôm nay để bắt đầu lại từ Phiên 1? (Dữ liệu các ngày trước vẫn được bảo lưu)`)) {
+  if (!confirm(`Bạn có chắc muốn RESET ${countToday} phiên đã đánh hôm nay để bắt đầu lại từ Phiên 1?`)) {
     return;
   }
 
   const todayStr = getTodayStr();
-  // Xóa các phiên hôm nay trong db
   db = db.filter(item => item.date !== todayStr);
   localStorage.setItem("roulette_history_db", JSON.stringify(db));
 
-  // Xóa nhật ký ván của hôm nay
   roundLogs = roundLogs.filter(item => item.date !== todayStr);
   localStorage.setItem("roulette_round_logs", JSON.stringify(roundLogs));
 
   currentRound = 0;
   evaluatedRounds = 0;
+  enteredNumbersHistory = [];
+  renderBallStream();
+
   p1 = initPlayer();
   p2 = initPlayer();
   p3 = initPlayer();
@@ -639,48 +777,34 @@ function renderCard(prefix, p) {
   netEl.textContent = (p.net >= 0 ? "+" : "") + p.net + "$";
   netEl.style.color = p.net >= 0 ? "var(--win)" : "var(--lose)";
 
-  document.getElementById(`${prefix}Step`).textContent = `GĐ ${p.buoc <= 6 ? 1 : 2} - Bước ${p.buoc} (Lệnh ${p.lenh})`;
-  
   const box = document.getElementById(`${prefix}Box`);
-  const lbl = document.getElementById(`${prefix}Label`);
+  const stepText = document.getElementById(`${prefix}StepText`);
   const act = document.getElementById(`${prefix}Action`);
-  const bet = document.getElementById(`${prefix}Bet`);
+  const betVal = document.getElementById(`${prefix}Bet`);
   const msg = document.getElementById(`${prefix}Msg`);
 
   if (p.stopped) {
-    box.style.background = "#dc2626";
-    box.style.border = "2px solid #ffffff";
-    box.style.boxShadow = "0 0 16px rgba(220, 38, 38, 0.8)";
-
-    lbl.textContent = "TRẠNG THÁI:";
-    lbl.style.color = "#ffffff";
-
+    // KHI DỪNG: NỀN ĐỎ - CHỮ TRẮNG TO
+    box.className = "bet-display stopped-box";
+    stepText.textContent = "TRẠNG THÁI:";
     act.textContent = "DỪNG LỆNH";
-    act.style.color = "#ffffff";
-    act.style.fontSize = "24px";
-    act.style.fontWeight = "900";
-
-    bet.textContent = "0$";
-    bet.style.color = "#fef08a";
-
+    betVal.textContent = "0$";
     msg.textContent = p.msg;
     msg.className = "msg-box " + (p.msg.includes("CHỐT") ? "msg-win" : "msg-lose");
+  } else if (p.target) {
+    // KHI VÀO LỆNH (YÊU CẦU 2): NỀN XANH - CHỮ TRẮNG TO RỰC
+    box.className = "bet-display action-active";
+    stepText.textContent = `GĐ ${p.buoc <= 6 ? 1 : 2} • BƯỚC ${p.buoc} • LỆNH ${p.lenh}`;
+    act.textContent = `ĐÁNH: ${p.target}`;
+    betVal.textContent = p.betAmt + "$";
+    msg.textContent = p.msg;
+    msg.className = "msg-box msg-warn";
   } else {
-    box.style.background = "#0b0f19";
-    box.style.border = "1px solid #1e293b";
-    box.style.boxShadow = "none";
-
-    lbl.textContent = "CỬA VÀO & TIỀN CƯỢC:";
-    lbl.style.color = "#94a3b8";
-
-    act.textContent = p.target ? `ĐÁNH: ${p.target}` : "CHỜ VÁN MỒI";
-    act.style.color = "var(--accent)";
-    act.style.fontSize = "18px";
-    act.style.fontWeight = "800";
-
-    bet.textContent = p.betAmt + "$";
-    bet.style.color = "#facc15";
-
+    // VÁN MỒI ĐẦU TIÊN
+    box.className = "bet-display waiting-box";
+    stepText.textContent = `GĐ 1 • BƯỚC 1 • LỆNH 1`;
+    act.textContent = "CHỜ VÁN MỒI";
+    betVal.textContent = p.betAmt + "$";
     msg.textContent = p.msg;
     msg.className = "msg-box msg-warn";
   }
