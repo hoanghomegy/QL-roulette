@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hệ Thống Quản Lý Phiên & Báo Cáo Doanh Thu</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card: #151e2e;
+      --border: #26334d;
+      --text: #f1f5f9;
+      --accent: #38bdf8;
+      --win: #10b981;
+      --lose: #ef4444;
+      --warn: #f59e0b;
+    }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
+    .container { max-width: 960px; margin: 0 auto; }
+    
+    /* Header & Báo cáo tổng quan */
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 12px; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
+    .stat-label { font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+    .stat-val { font-size: 20px; font-weight: 800; }
+    .pos { color: var(--win); }
+    .neg { color: var(--lose); }
+
+    /* Thanh điều khiển phiên */
+    .session-panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+    .control-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+    .input-box { flex: 1; min-width: 130px; }
+    label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+    input { width: 100%; padding: 10px; background: #0b0f19; border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 15px; font-weight: bold; }
+    
+    button { height: 42px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; padding: 0 16px; font-size: 14px; }
+    .btn-submit { background: #2563eb; color: #fff; }
+    .btn-session-end { background: #e11d48; color: #fff; }
+    .btn-export { background: #059669; color: #fff; }
+
+    /* Lưới 3 người chơi */
+    .grid-players { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 14px; }
+    .player-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 14px; }
+    .player-card.red-black { border-top: 4px solid #ef4444; }
+    .player-card.small-big { border-top: 4px solid #f59e0b; }
+    .player-card.odd-even { border-top: 4px solid #10b981; }
+
+    .p-head { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 8px; }
+    .step-tag { display: inline-block; font-size: 11px; padding: 3px 6px; border-radius: 4px; background: #1e293b; color: #93c5fd; margin-bottom: 8px; font-weight: 600; }
+    .bet-display { background: #0b0f19; border-radius: 8px; padding: 10px; text-align: center; margin-bottom: 8px; }
+    .bet-target { font-size: 18px; font-weight: 800; color: var(--accent); }
+    .bet-cash { font-size: 22px; font-weight: 900; color: #facc15; }
+    .msg-box { font-size: 12px; min-height: 34px; padding: 6px; border-radius: 6px; line-height: 1.3; }
+    .msg-warn { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .msg-win { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .msg-lose { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+    /* Bảng lịch sử báo cáo */
+    .history-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; margin-top: 8px; }
+    th { background: #1e293b; color: #94a3b8; padding: 8px; font-weight: 600; }
+    td { padding: 8px; border-bottom: 1px solid #1e293b; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Bảng thống kê doanh thu -->
+  <div class="dashboard-grid">
+    <div class="stat-card">
+      <div class="stat-label">HÔM NAY (3 PHIÊN)</div>
+      <div class="stat-val" id="todaySessionsDisplay">0 / 3 Phiên</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">LỢI NHUẬN HÔM NAY</div>
+      <div class="stat-val" id="todayProfitDisplay">0$</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">LỢI NHUẬN THÁNG NÀY</div>
+      <div class="stat-val" id="monthProfitDisplay">0$</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">TỔNG LỢI NHUẬN TÍCH LŨY</div>
+      <div class="stat-val" id="totalProfitDisplay">0$</div>
+    </div>
+  </div>
+
+  <!-- Bảng điều khiển phiên -->
+  <div class="session-panel">
+    <div class="control-row">
+      <div class="input-box" style="max-width: 120px;">
+        <label>Vốn cơ sở ($)</label>
+        <input type="number" id="baseUnit" value="1" min="0.5" step="0.5" onchange="capNhatBaseUnit()">
+      </div>
+      <div class="input-box" style="max-width: 140px;">
+        <label>Phiên hiện tại</label>
+        <input type="text" id="curSessionInfo" value="Phiên 1 / 3" readonly style="color: #38bdf8; background: #1e293b;">
+      </div>
+      <div class="input-box" style="max-width: 140px;">
+        <label>Nhập số vừa ra (0-36)</label>
+        <input type="number" id="inputNumber" placeholder="Số..." min="0" max="36">
+      </div>
+      <button class="btn-submit" onclick="nhapSo()">XÁC NHẬN SỐ</button>
+      <button class="btn-session-end" onclick="ketThucPhien()">CHỐT PHIÊN NÀY</button>
+      <button class="btn-export" onclick="xuatBaoCao()">XUẤT NHẬT KÝ</button>
+    </div>
+    <div id="sessionAlert" style="margin-top: 10px; font-size: 13px; color: #facc15;"></div>
+  </div>
+
+  <!-- 3 Người chơi theo trường phái -->
+  <div class="grid-players">
+    <!-- P1: Đỏ / Đen -->
+    <div class="player-card red-black">
+      <div class="p-head">
+        <span>P1: ĐỎ / ĐEN</span>
+        <span id="p1Net">0$</span>
+      </div>
+      <div class="step-tag" id="p1Step">GĐ 1 - Bước 1 (Lệnh 1)</div>
+      <div class="bet-display">
+        <div style="font-size: 11px; color: #94a3b8;">CỬA VÀO & TIỀN CƯỢC:</div>
+        <div class="bet-target" id="p1Action">CHỜ VÁN MỒI</div>
+        <div class="bet-cash" id="p1Bet">1$</div>
+      </div>
+      <div class="msg-box msg-warn" id="p1Msg">Nhập số đầu tiên để bắt đầu bắt nhịp cầu.</div>
+    </div>
+
+    <!-- P2: Nhỏ / To -->
+    <div class="player-card small-big">
+      <div class="p-head">
+        <span>P2: NHỎ / TO</span>
+        <span id="p2Net">0$</span>
+      </div>
+      <div class="step-tag" id="p2Step">GĐ 1 - Bước 1 (Lệnh 1)</div>
+      <div class="bet-display">
+        <div style="font-size: 11px; color: #94a3b8;">CỬA VÀO & TIỀN CƯỢC:</div>
+        <div class="bet-target" id="p2Action">CHỜ VÁN MỒI</div>
+        <div class="bet-cash" id="p2Bet">1$</div>
+      </div>
+      <div class="msg-box msg-warn" id="p2Msg">Nhập số đầu tiên để bắt đầu bắt nhịp cầu.</div>
+    </div>
+
+    <!-- P3: Lẻ / Chẵn -->
+    <div class="player-card odd-even">
+      <div class="p-head">
+        <span>P3: LẺ / CHẴN</span>
+        <span id="p3Net">0$</span>
+      </div>
+      <div class="step-tag" id="p3Step">GĐ 1 - Bước 1 (Lệnh 1)</div>
+      <div class="bet-display">
+        <div style="font-size: 11px; color: #94a3b8;">CỬA VÀO & TIỀN CƯỢC:</div>
+        <div class="bet-target" id="p3Action">CHỜ VÁN MỒI</div>
+        <div class="bet-cash" id="p3Bet">1$</div>
+      </div>
+      <div class="msg-box msg-warn" id="p3Msg">Nhập số đầu tiên để bắt đầu bắt nhịp cầu.</div>
+    </div>
+  </div>
+
+  <!-- Lịch sử nhật ký phiên gần nhất -->
+  <div class="history-card">
+    <div style="font-weight: bold; font-size: 14px;">LỊCH SỬ CÁC PHIÊN GẦN ĐÂY</div>
+    <table id="historyTable">
+      <thead>
+        <tr>
+          <th>Thời gian</th>
+          <th>Phiên</th>
+          <th>Số ván</th>
+          <th>P1 (Đỏ/Đen)</th>
+          <th>P2 (Nhỏ/To)</th>
+          <th>P3 (Lẻ/Chẵn)</th>
+          <th>Tổng Lãi/Lỗ</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody">
+        <tr><td colspan="7" style="color: #64748b;">Chưa có dữ liệu phiên nào được lưu.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// CẤU HÌNH VỐN 14 BƯỚC (STAR 2.0 BIẾN THỂ)
+const BET_TABLE = {
+  1:  { l1: 1,  l2: 0  },
+  2:  { l1: 1,  l2: 1  },
+  3:  { l1: 1,  l2: 2  },
+  4:  { l1: 1,  l2: 2  },
+  5:  { l1: 1,  l2: 2  },
+  6:  { l1: 1,  l2: 2  },
+  7:  { l1: 4,  l2: 4  },
+  8:  { l1: 4,  l2: 8  },
+  9:  { l1: 5,  l2: 10 },
+  10: { l1: 7,  l2: 14 },
+  11: { l1: 9,  l2: 18 },
+  12: { l1: 12, l2: 24 },
+  13: { l1: 16, l2: 32 },
+  14: { l1: 22, l2: 44 }
+};
+
+const RED_NUMS = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+let baseUnit = 1;
+let currentRound = 0;
+
+// Cấu trúc Player
+function initPlayer() {
+  return { buoc: 1, lenh: 1, net: 0, target: null, betAmt: 1, msg: "Sẵn sàng", stopped: false };
+}
+
+let p1 = initPlayer(), p2 = initPlayer(), p3 = initPlayer();
+
+// Quản lý lưu trữ LocalStorage
+let db = JSON.parse(localStorage.getItem("roulette_history_db") || "[]");
+
+function getTodayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getCurMonthStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+function getTodaySessionsCount() {
+  const today = getTodayStr();
+  return db.filter(item => item.date === today).length;
+}
+
+function capNhatBaseUnit() {
+  baseUnit = parseFloat(document.getElementById("baseUnit").value) || 1;
+  p1.betAmt = tinhTien(p1);
+  p2.betAmt = tinhTien(p2);
+  p3.betAmt = tinhTien(p3);
+  renderUI();
+}
+
+function tinhTien(p) {
+  if (p.stopped) return 0;
+  const cfg = BET_TABLE[p.buoc];
+  return (p.lenh === 1 ? cfg.l1 : cfg.l2) * baseUnit;
+}
+
+function phanLoai(n) {
+  n = parseInt(n);
+  if (n === 0) return { col: "0", size: "0", par: "0" };
+  return {
+    col: RED_NUMS.includes(n) ? "ĐỎ" : "ĐEN",
+    size: n <= 18 ? "NHỎ" : "TO",
+    par: n % 2 === 1 ? "LẺ" : "CHẴN"
+  };
+}
+
+// Logic chuyển bước của người dùng
+function transitionStep(p, win) {
+  if (p.stopped) return;
+  const b = p.buoc, l = p.lenh;
+
+  if (b === 1) {
+    if (win) { p.msg = "🎯 CHỐT LÃI 1$ - DỪNG"; p.stopped = true; }
+    else { p.buoc = 2; p.lenh = 1; p.msg = "Lose B1 -> Sang B2 L1"; }
+    return;
+  }
+  if (b === 2) {
+    if (l === 1) {
+      if (win) { p.lenh = 2; p.msg = "Win L1 -> Vào L2 (1$)"; }
+      else { p.buoc = 3; p.lenh = 1; p.msg = "Lose L1 -> Xuống B3 L1"; }
+    } else {
+      if (win) { p.msg = "🎯 CHỐT LÃI 1$ - DỪNG"; p.stopped = true; }
+      else { p.lenh = 1; p.msg = "Lose L2 -> Ở lại B2 đánh lại L1"; }
+    }
+    return;
+  }
+  if (b === 3) {
+    if (l === 1) {
+      if (win) { p.lenh = 2; p.msg = "Win L1 -> Vào L2 (2$)"; }
+      else { p.buoc = 4; p.lenh = 1; p.msg = "Lose L1 -> Xuống B4 L1"; }
+    } else {
+      if (win) { p.msg = "🎯 CHỐT LÃI 1$ - DỪNG"; p.stopped = true; }
+      else { p.buoc = 4; p.lenh = 1; p.msg = "Lose L2 -> Xuống B4 L1"; }
+    }
+    return;
+  }
+  if (b === 4) {
+    if (l === 1) {
+      if (win) { p.lenh = 2; p.msg = "Win L1 -> Vào L2 (2$)"; }
+      else { p.buoc = 5; p.lenh = 1; p.msg = "Lose L1 -> Xuống B5 L1"; }
+    } else {
+      if (win) { p.buoc = 1; p.lenh = 1; p.msg = "Win L2: Hòa vốn! Về B1 L1"; }
+      else { p.buoc = 5; p.lenh = 1; p.msg = "Lose L2 -> Xuống B5 L1"; }
+    }
+    return;
+  }
+  if (b === 5) {
+    if (l === 1) {
+      if (win) { p.lenh = 2; p.msg = "Win L1 -> Vào L2 (2$)"; }
+      else { p.buoc = 6; p.lenh = 1; p.msg = "Lose L1 -> Xuống B6 L1"; }
+    } else {
+      if (win) { p.buoc = 2; p.lenh = 1; p.msg = "Win L2: Âm 1$ -> Về B2 L1"; }
+      else { p.buoc = 6; p.lenh = 1; p.msg = "Lose L2 -> Xuống B6 L1"; }
+    }
+    return;
+  }
+  if (b === 6) {
+    if (l === 1) {
+      if (win) { p.lenh = 2; p.msg = "Win L1 -> Vào L2 (2$)"; }
+      else { p.buoc = 7; p.lenh = 1; p.msg = "⚠️ RỚT GIAI ĐOẠN 2 (B7 L1)"; }
+    } else {
+      if (win) { p.buoc = 2; p.lenh = 1; p.msg = "Win L2: Âm 2$ -> Về B2 L1"; }
+      else { p.buoc = 7; p.lenh = 1; p.msg = "⚠️ RỚT GIAI ĐOẠN 2 (B7 L1)"; }
+    }
+    return;
+  }
+  // GIAI ĐOẠN 2
+  if (b === 7) {
+    if (l === 1) {
+      if (win) { p.lenh = 2; p.msg = "Win L1 -> Vào L2 (4$)"; }
+      else { p.buoc = 8; p.lenh = 1; p.msg = "Lose L1 -> Sang B8 L1"; }
+    } else {
+      if (win) { p.msg = "🎯 CHỐT LÃI 2$ - DỪNG"; p.stopped = true; }
+      else { p.lenh = 1; p.msg = "Lose L2 -> Về L1 B7 tiếp tục"; }
+    }
+    return;
+  }
+  if (b === 8) {
+    if (l === 1) {
+      if (win) { p.lenh = 2; p.msg = "Win L1 -> Vào L2 (8$)"; }
+      else { p.buoc = 9; p.lenh = 1; p.msg = "Lose L1 -> Sang B9 L1"; }
+    } else {
+      if (win) { p.msg = "🎯 CHỐT LÃI 2$ - DỪNG"; p.stopped = true; }
+      else { p.buoc = 9; p.lenh = 1; p.msg = "Lose L2 -> Sang B9 L1"; }
+    }
+    return;
+  }
+  if (b >= 9 && b <= 13) {
+    if (l === 1) {
+      if (win) { p.lenh = 2; p.msg = `Win L1 -> Vào L2 (${BET_TABLE[b].l2}$)`; }
+      else { p.buoc = b + 1; p.lenh = 1; p.msg = `Lose L1 -> Sang B${b+1} L1`; }
+    } else {
+      if (win) { p.msg = "🎯 CHỐT LÃI 1$ - DỪNG"; p.stopped = true; }
+      else { p.buoc = b + 1; p.lenh = 1; p.msg = `Lose L2 -> Sang B${b+1} L1`; }
+    }
+    return;
+  }
+  if (b === 14) {
+    if (l === 1) {
+      if (win) { p.lenh = 2; p.msg = "Win L1 -> Vào L2 (44$) chốt hạ"; }
+      else { p.msg = "🛑 STOP PHIÊN: CẮT LỖ THUA 85$"; p.stopped = true; }
+    } else {
+      if (win) { p.msg = "🎯 CHỐT LÃI 3$ - DỪNG"; p.stopped = true; }
+      else { p.msg = "🛑 STOP PHIÊN: CẮT LỖ THUA 85$"; p.stopped = true; }
+    }
+  }
+}
+
+function nhapSo() {
+  const countToday = getTodaySessionsCount();
+  if (countToday >= 3) {
+    alert("KỶ LUẬT: Hôm nay bạn đã đánh đủ 3 phiên! Hãy nghỉ ngơi để bảo toàn vốn và quay lại vào ngày mai.");
+    return;
+  }
+
+  const inp = document.getElementById("inputNumber");
+  const val = inp.value.trim();
+  if (val === "" || isNaN(val) || parseInt(val) < 0 || parseInt(val) > 36) {
+    alert("Vui lòng nhập số từ 0 đến 36!");
+    return;
+  }
+  const n = parseInt(val);
+  const info = phanLoai(n);
+  currentRound++;
+
+  const list = [
+    { p: p1, res: info.col },
+    { p: p2, res: info.size },
+    { p: p3, res: info.par }
+  ];
+
+  list.forEach(item => {
+    const pl = item.p;
+    if (!pl.stopped) {
+      if (pl.target !== null) {
+        const isWin = (pl.target === item.res);
+        pl.net += isWin ? pl.betAmt : -pl.betAmt;
+        transitionStep(pl, isWin);
+      }
+      if (item.res !== "0") pl.target = item.res;
+      pl.betAmt = tinhTien(pl);
+    }
+  });
+
+  inp.value = "";
+  inp.focus();
+  renderUI();
+}
+
+function ketThucPhien() {
+  if (currentRound === 0) {
+    alert("Phiên chưa có ván nào được đánh!");
+    return;
+  }
+  const countToday = getTodaySessionsCount();
+  if (countToday >= 3) {
+    alert("Hôm nay đã hoàn thành đủ 3 phiên.");
+    return;
+  }
+
+  const now = new Date();
+  const sessionItem = {
+    id: Date.now(),
+    date: getTodayStr(),
+    month: getCurMonthStr(),
+    time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    sessionIndex: countToday + 1,
+    rounds: currentRound,
+    p1: p1.net,
+    p2: p2.net,
+    p3: p3.net,
+    total: p1.net + p2.net + p3.net
+  };
+
+  db.unshift(sessionItem);
+  localStorage.setItem("roulette_history_db", JSON.stringify(db));
+
+  // Reset ván
+  currentRound = 0;
+  p1 = initPlayer();
+  p2 = initPlayer();
+  p3 = initPlayer();
+  capNhatBaseUnit();
+
+  alert(`Đã lưu kết quả Phiên ${sessionItem.sessionIndex}! Tổng lợi nhuận: ${sessionItem.total}$`);
+  renderUI();
+}
+
+function renderUI() {
+  const countToday = getTodaySessionsCount();
+  document.getElementById("todaySessionsDisplay").textContent = `${countToday} / 3 Phiên`;
+  document.getElementById("curSessionInfo").value = countToday >= 3 ? "ĐÃ HẾT 3 PHIÊN" : `Phiên ${countToday + 1} / 3`;
+
+  // Tính thống kê
+  const todayStr = getTodayStr();
+  const monthStr = getCurMonthStr();
+
+  let todaySum = 0, monthSum = 0, totalSum = 0;
+  db.forEach(item => {
+    totalSum += item.total;
+    if (item.month === monthStr) monthSum += item.total;
+    if (item.date === todayStr) todaySum += item.total;
+  });
+
+  formatStat("todayProfitDisplay", todaySum);
+  formatStat("monthProfitDisplay", monthSum);
+  formatStat("totalProfitDisplay", totalSum);
+
+  renderCard("p1", p1);
+  renderCard("p2", p2);
+  renderCard("p3", p3);
+
+  // Render bảng lịch sử
+  const tbody = document.getElementById("historyBody");
+  if (db.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="color: #64748b;">Chưa có dữ liệu phiên nào được lưu.</td></tr>';
+  } else {
+    tbody.innerHTML = db.slice(0, 10).map(s => `
+      <tr>
+        <td>${s.date} ${s.time}</td>
+        <td>Phiên ${s.sessionIndex}</td>
+        <td>${s.rounds}</td>
+        <td class="${s.p1 >= 0 ? 'pos' : 'neg'}">${s.p1 > 0 ? '+' : ''}${s.p1}$</td>
+        <td class="${s.p2 >= 0 ? 'pos' : 'neg'}">${s.p2 > 0 ? '+' : ''}${s.p2}$</td>
+        <td class="${s.p3 >= 0 ? 'pos' : 'neg'}">${s.p3 > 0 ? '+' : ''}${s.p3}$</td>
+        <td class="${s.total >= 0 ? 'pos' : 'neg'}" style="font-weight:bold;">${s.total > 0 ? '+' : ''}${s.total}$</td>
+      </tr>
+    `).join("");
+  }
+}
+
+function formatStat(id, val) {
+  const el = document.getElementById(id);
+  el.textContent = (val > 0 ? "+" : "") + val + "$";
+  el.className = "stat-val " + (val >= 0 ? "pos" : "neg");
+}
+
+function renderCard(prefix, p) {
+  const netEl = document.getElementById(`${prefix}Net`);
+  netEl.textContent = (p.net >= 0 ? "+" : "") + p.net + "$";
+  netEl.style.color = p.net >= 0 ? "var(--win)" : "var(--lose)";
+
+  document.getElementById(`${prefix}Step`).textContent = `GĐ ${p.buoc <= 6 ? 1 : 2} - Bước ${p.buoc} (Lệnh ${p.lenh})`;
+  
+  const act = document.getElementById(`${prefix}Action`);
+  const bet = document.getElementById(`${prefix}Bet`);
+  const msg = document.getElementById(`${prefix}Msg`);
+
+  if (p.stopped) {
+    act.textContent = "DỪNG LỆNH";
+    act.style.color = "#94a3b8";
+    bet.textContent = "0$";
+    msg.textContent = p.msg;
+    msg.className = "msg-box " + (p.msg.includes("CHỐT") ? "msg-win" : "msg-lose");
+  } else {
+    act.textContent = p.target ? `ĐÁNH: ${p.target}` : "CHỜ SỐ ĐẦU";
+    act.style.color = "var(--accent)";
+    bet.textContent = p.betAmt + "$";
+    msg.textContent = p.msg;
+    msg.className = "msg-box msg-warn";
+  }
+}
+
+function xuatBaoCao() {
+  if (db.length === 0) {
+    alert("Chưa có dữ liệu để xuất!");
+    return;
+  }
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Nhat_Ky_Roulette_${getTodayStr()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Khởi chạy khi tải trang
+renderUI();
+</script>
+</body>
+</html>
