@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hệ Thống Quản Lý Phiên & Báo Cáo Doanh Thu</title>
+  <title>Quản Lý Phiên & Báo Cáo Nhật Ký Chi Tiết 3 Player</title>
   <style>
     :root {
       --bg: #0b0f19;
@@ -17,7 +17,7 @@
     }
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
-    .container { max-width: 960px; margin: 0 auto; }
+    .container { max-width: 1000px; margin: 0 auto; }
     
     .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 12px; }
     .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
@@ -49,17 +49,8 @@
       text-align: center;
       line-height: 1.5;
     }
-    .banner-win-stop {
-      background: #064e3b;
-      border: 2px solid #10b981;
-      color: #ecfdf5;
-      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
-    }
-    .banner-continue {
-      background: #451a03;
-      border: 2px solid #f59e0b;
-      color: #fef3c7;
-    }
+    .banner-win-stop { background: #064e3b; border: 2px solid #10b981; color: #ecfdf5; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+    .banner-continue { background: #451a03; border: 2px solid #f59e0b; color: #fef3c7; }
 
     .grid-players { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 14px; }
     .player-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 14px; }
@@ -70,7 +61,7 @@
     .p-head { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 8px; }
     .step-tag { display: inline-block; font-size: 11px; padding: 3px 6px; border-radius: 4px; background: #1e293b; color: #93c5fd; margin-bottom: 8px; font-weight: 600; }
     
-    .bet-display { background: #0b0f19; border-radius: 8px; padding: 10px; text-align: center; margin-bottom: 8px; border: 1px solid #1e293b; transition: all 0.2s ease; }
+    .bet-display { background: #0b0f19; border-radius: 8px; padding: 10px; text-align: center; margin-bottom: 8px; border: 1px solid #1e293b; }
     .bet-target { font-size: 18px; font-weight: 800; color: var(--accent); }
     .bet-cash { font-size: 22px; font-weight: 900; color: #facc15; }
     
@@ -79,7 +70,7 @@
     .msg-win { background: rgba(16, 185, 129, 0.15); color: #34d399; }
     .msg-lose { background: rgba(239, 68, 68, 0.15); color: #f87171; }
 
-    .history-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+    .history-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-top: 12px; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; margin-top: 8px; }
     th { background: #1e293b; color: #94a3b8; padding: 8px; font-weight: 600; }
     td { padding: 8px; border-bottom: 1px solid #1e293b; }
@@ -123,11 +114,11 @@
       </div>
       <button class="btn-submit" onclick="nhapSo()">XÁC NHẬN SỐ</button>
       <button class="btn-session-end" onclick="ketThucPhien()">CHỐT PHIÊN NÀY</button>
-      <button class="btn-export" onclick="xuatExcel()">XUẤT EXCEL (.CSV)</button>
+      <button class="btn-export" onclick="xuatExcelChiTiet()">XUẤT EXCEL CHI TIẾT (.XLS)</button>
     </div>
     <div class="limit-info">
       <span>🛑 <strong>Cắt lỗ 1 Player (Bước 14):</strong> <span id="singleLossLimit" style="color: #ef4444; font-weight: bold;">-85$</span></span>
-      <span>🛑 <strong>Giới hạn thua tối đa cả phiên (3 Player gãy sạch):</strong> <span id="totalLossLimit" style="color: #ef4444; font-weight: bold;">-255$</span></span>
+      <span>🛑 <strong>Giới hạn thua tối đa cả phiên (3 Player cùng gãy):</strong> <span id="totalLossLimit" style="color: #ef4444; font-weight: bold;">-255$</span></span>
     </div>
   </div>
 
@@ -229,7 +220,11 @@ function initPlayer() {
 }
 
 let p1 = initPlayer(), p2 = initPlayer(), p3 = initPlayer();
+
+// Dữ liệu lưu trữ tổng thể
 let db = JSON.parse(localStorage.getItem("roulette_history_db") || "[]");
+// Dữ liệu lưu chi tiết từng ván của các phiên
+let roundLogs = JSON.parse(localStorage.getItem("roulette_round_logs") || "[]");
 
 function getTodayStr() {
   const d = new Date();
@@ -391,37 +386,76 @@ function nhapSo() {
   currentRound++;
 
   const list = [
-    { p: p1, res: info.col },
-    { p: p2, res: info.size },
-    { p: p3, res: info.par }
+    { p: p1, res: info.col, name: "P1" },
+    { p: p2, res: info.size, name: "P2" },
+    { p: p3, res: info.par, name: "P3" }
   ];
 
   let hasEvaluated = false;
   let winCountInRound = 0;
   let loseCountInRound = 0;
 
+  // Bản ghi nhật ký chi tiết cho ván này
+  const roundLogItem = {
+    date: getTodayStr(),
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+    sessionIndex: countToday + 1,
+    round: currentRound,
+    num: n,
+    p1: {},
+    p2: {},
+    p3: {}
+  };
+
   list.forEach(item => {
     const pl = item.p;
+    const pKey = item.name.toLowerCase();
+
     if (!pl.stopped) {
       if (pl.target !== null) {
         hasEvaluated = true;
         const isWin = (pl.target === item.res);
+        const betAmount = pl.betAmt;
+        const stepBefore = pl.buoc;
+        const lenhBefore = pl.lenh;
+        const gdBefore = stepBefore <= 6 ? 1 : 2;
+
         if (isWin) {
-          pl.net += pl.betAmt;
+          pl.net += betAmount;
           winCountInRound++;
         } else {
-          pl.net -= pl.betAmt;
+          pl.net -= betAmount;
           loseCountInRound++;
         }
+
+        // Lưu thông tin ván của player này
+        roundLogItem[pKey] = {
+          target: pl.target,
+          gd: gdBefore,
+          buoc: stepBefore,
+          lenh: lenhBefore,
+          bet: betAmount,
+          result: isWin ? "WIN" : "LOSE",
+          profit: isWin ? betAmount : -betAmount,
+          cumNet: pl.net
+        };
+
         transitionStep(pl, isWin);
+      } else {
+        roundLogItem[pKey] = { target: "VÁN MỒI", gd: "-", buoc: "-", lenh: "-", bet: 0, result: "-", profit: 0, cumNet: 0 };
       }
+
       if (item.res !== "0") pl.target = item.res;
       pl.betAmt = tinhTien(pl);
+    } else {
+      roundLogItem[pKey] = { target: "DỪNG LỆNH", gd: "-", buoc: "-", lenh: "-", bet: 0, result: "-", profit: 0, cumNet: pl.net };
     }
   });
 
   if (hasEvaluated) {
     evaluatedRounds++;
+    roundLogs.push(roundLogItem);
+    localStorage.setItem("roulette_round_logs", JSON.stringify(roundLogs));
     kiemTraCanhBaoDacBiet(winCountInRound, loseCountInRound);
   }
 
@@ -601,24 +635,141 @@ function renderCard(prefix, p) {
   }
 }
 
-// XUẤT THẲNG FILE EXCEL (.CSV) MỞ ĐƯỢC NGAY TRÊN EXCEL
-function xuatExcel() {
-  if (db.length === 0) {
-    alert("Chưa có dữ liệu để xuất!");
+// XUẤT BẢNG EXCEL .XLS CHUẨN ĐẸP 100%, PHÂN TÁCH CỘT RÕ RÀNG CHO 3 NGƯỜI CHƠI
+function xuatExcelChiTiet() {
+  if (roundLogs.length === 0) {
+    alert("Chưa có ván nào có dữ liệu chi tiết để xuất!");
     return;
   }
-  let csvContent = "\uFEFF"; // Ký tự UTF-8 BOM để Excel đọc tiếng Việt không bị lỗi font
-  csvContent += "Ngay,Gio,Phien,So_Van,P1_Do_Den,P2_Nho_To,P3_Le_Chan,Tong_Lai_Lo\n";
 
-  db.forEach(row => {
-    csvContent += `"${row.date}","${row.time}","Phiên ${row.sessionIndex}","${row.rounds}","${row.p1}$","${row.p2}$","${row.p3}$","${row.total}$"\n`;
+  let html = `
+  <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+      table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 11pt; }
+      th, td { border: 1px solid #cccccc; padding: 6px 10px; text-align: center; }
+      th { background-color: #1e293b; color: #ffffff; font-weight: bold; }
+      .p1-th { background-color: #991b1b; color: #ffffff; }
+      .p2-th { background-color: #b45309; color: #ffffff; }
+      .p3-th { background-color: #065f46; color: #ffffff; }
+      .win-cell { color: #15803d; font-weight: bold; }
+      .lose-cell { color: #b91c1c; font-weight: bold; }
+      .header-sub { background-color: #f1f5f9; color: #334155; font-weight: bold; }
+    </style>
+  </head>
+  <body>
+    <h2>BÁO CÁO CHI TIẾT NHẬT KÝ TỪNG VÁN - 3 NGƯỜI CHƠI</h2>
+    <table>
+      <thead>
+        <tr>
+          <th colspan="4" style="background:#0f172a;">THÔNG TIN VÁN</th>
+          <th colspan="7" class="p1-th">NGƯỜI CHƠI 1 (ĐỎ / ĐEN)</th>
+          <th colspan="7" class="p2-th">NGƯỜI CHƠI 2 (NHỎ / TO)</th>
+          <th colspan="7" class="p3-th">NGƯỜI CHƠI 3 (LẺ / CHẴN)</th>
+          <th colspan="2" style="background:#0f172a;">TỔNG KẾT VÁN</th>
+        </tr>
+        <tr class="header-sub">
+          <th>Ngày Giờ</th>
+          <th>Phiên</th>
+          <th>Ván</th>
+          <th>Số ra</th>
+
+          <!-- P1 -->
+          <th>Cửa vào</th>
+          <th>GĐ</th>
+          <th>Bước</th>
+          <th>Lệnh</th>
+          <th>Tiền cược ($)</th>
+          <th>Kết quả</th>
+          <th>Lũy kế P1 ($)</th>
+
+          <!-- P2 -->
+          <th>Cửa vào</th>
+          <th>GĐ</th>
+          <th>Bước</th>
+          <th>Lệnh</th>
+          <th>Tiền cược ($)</th>
+          <th>Kết quả</th>
+          <th>Lũy kế P2 ($)</th>
+
+          <!-- P3 -->
+          <th>Cửa vào</th>
+          <th>GĐ</th>
+          <th>Bước</th>
+          <th>Lệnh</th>
+          <th>Tiền cược ($)</th>
+          <th>Kết quả</th>
+          <th>Lũy kế P3 ($)</th>
+
+          <!-- Tổng kết -->
+          <th>Lãi/Lỗ ván này ($)</th>
+          <th>Tổng số dư ($)</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  roundLogs.forEach(r => {
+    const p1Profit = r.p1.profit || 0;
+    const p2Profit = r.p2.profit || 0;
+    const p3Profit = r.p3.profit || 0;
+    const roundNet = p1Profit + p2Profit + p3Profit;
+    const totalSessionNet = (r.p1.cumNet || 0) + (r.p2.cumNet || 0) + (r.p3.cumNet || 0);
+
+    html += `
+      <tr>
+        <td>${r.date} ${r.time}</td>
+        <td>Phiên ${r.sessionIndex}</td>
+        <td>${r.round}</td>
+        <td style="font-weight:bold; font-size:12pt;">${r.num}</td>
+
+        <!-- P1 -->
+        <td>${r.p1.target || '-'}</td>
+        <td>${r.p1.gd || '-'}</td>
+        <td>${r.p1.buoc || '-'}</td>
+        <td>${r.p1.lenh || '-'}</td>
+        <td>${r.p1.bet || 0}$</td>
+        <td class="${r.p1.result === 'WIN' ? 'win-cell' : (r.p1.result === 'LOSE' ? 'lose-cell' : '')}">${r.p1.result || '-'}</td>
+        <td style="font-weight:bold;" class="${(r.p1.cumNet || 0) >= 0 ? 'win-cell' : 'lose-cell'}">${r.p1.cumNet || 0}$</td>
+
+        <!-- P2 -->
+        <td>${r.p2.target || '-'}</td>
+        <td>${r.p2.gd || '-'}</td>
+        <td>${r.p2.buoc || '-'}</td>
+        <td>${r.p2.lenh || '-'}</td>
+        <td>${r.p2.bet || 0}$</td>
+        <td class="${r.p2.result === 'WIN' ? 'win-cell' : (r.p2.result === 'LOSE' ? 'lose-cell' : '')}">${r.p2.result || '-'}</td>
+        <td style="font-weight:bold;" class="${(r.p2.cumNet || 0) >= 0 ? 'win-cell' : 'lose-cell'}">${r.p2.cumNet || 0}$</td>
+
+        <!-- P3 -->
+        <td>${r.p3.target || '-'}</td>
+        <td>${r.p3.gd || '-'}</td>
+        <td>${r.p3.buoc || '-'}</td>
+        <td>${r.p3.lenh || '-'}</td>
+        <td>${r.p3.bet || 0}$</td>
+        <td class="${r.p3.result === 'WIN' ? 'win-cell' : (r.p3.result === 'LOSE' ? 'lose-cell' : '')}">${r.p3.result || '-'}</td>
+        <td style="font-weight:bold;" class="${(r.p3.cumNet || 0) >= 0 ? 'win-cell' : 'lose-cell'}">${r.p3.cumNet || 0}$</td>
+
+        <!-- Tổng ván -->
+        <td style="font-weight:bold;" class="${roundNet >= 0 ? 'win-cell' : 'lose-cell'}">${roundNet > 0 ? '+' : ''}${roundNet}$</td>
+        <td style="font-weight:bold; background-color:#f8fafc;" class="${totalSessionNet >= 0 ? 'win-cell' : 'lose-cell'}">${totalSessionNet > 0 ? '+' : ''}${totalSessionNet}$</td>
+      </tr>
+    `;
   });
 
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  html += `
+      </tbody>
+    </table>
+  </body>
+  </html>
+  `;
+
+  const blob = new Blob([html], { type: "application/vnd.ms-excel;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `Nhat_Ky_Roulette_${getTodayStr()}.csv`;
+  a.download = `Nhat_Ky_Chi_Tiet_Roulette_${getTodayStr()}.xls`;
   a.click();
   URL.revokeObjectURL(url);
 }
