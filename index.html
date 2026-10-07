@@ -2,6 +2,9 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Trợ Lý 8-Way Roulette Thuần Việt</title>
   <style>
@@ -92,9 +95,9 @@
 
     /* CÓ LỆNH VÀO CƯỢC */
     .hero-betting {
-      background: #0f172a !important;
+      background: #090e17 !important;
       border: 2px solid #38bdf8 !important;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.45);
     }
     .hero-header-bar {
       display: flex;
@@ -102,79 +105,82 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 8px;
-      border-bottom: 1px solid #334155;
+      border-bottom: 1px solid #1e293b;
       padding-bottom: 10px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
-    .hero-tag-main { font-size: 16px; font-weight: 900; color: #38bdf8; text-transform: uppercase; }
-    .hero-money-summary { font-size: 15px; font-weight: 800; color: #facc15; }
+    .hero-tag-main { font-size: 18px; font-weight: 900; color: #38bdf8; text-transform: uppercase; }
+    .hero-money-summary { font-size: 16px; font-weight: 800; color: #facc15; }
 
-    /* BỐ CỤC TÁCH NHÓM CŨ VÀ NHÓM MỚI */
+    /* BỐ CỤC TÁCH BIỆT: NHÓM CŨ VS NHÓM MỚI */
     .split-groups-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 12px;
-      margin-bottom: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
     }
 
-    /* Khối Nhóm Cũ (Giữ & Rebet) */
+    /* 1. Khối Nhóm Cũ (Màu xanh dương) */
     .block-existing {
-      background: #1e293b;
-      border: 1px solid #475569;
-      border-top: 4px solid #38bdf8;
+      background: #172554;
+      border: 2px solid #3b82f6;
       border-radius: 10px;
       padding: 12px;
     }
     .block-title-existing {
       font-size: 13px;
-      font-weight: 800;
+      font-weight: 900;
       color: #93c5fd;
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       text-transform: uppercase;
+      border-bottom: 1px dashed #3b82f6;
+      padding-bottom: 6px;
     }
 
-    /* Khối Nhóm Mới (Cần Rải Thêm Chip) */
+    /* 2. Khối Nhóm Mới (Màu cam đỏ rực - Viền nhấp nháy chống sót) */
     .block-new {
       background: #451a03;
       border: 2px solid #f59e0b;
-      border-top: 5px solid #fbbf24;
       border-radius: 10px;
       padding: 12px;
-      box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
-      animation: alert-border 1.5s infinite alternate;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.55);
+      animation: alert-border 1.4s infinite alternate;
     }
     .block-title-new {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 900;
       color: #fef08a;
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       text-transform: uppercase;
+      border-bottom: 1px dashed #f59e0b;
+      padding-bottom: 6px;
     }
 
     .group-item-badge {
-      background: rgba(0,0,0,0.35);
+      background: rgba(0,0,0,0.4);
       border-radius: 8px;
-      padding: 8px 10px;
+      padding: 10px 12px;
       margin-bottom: 8px;
     }
-    .group-item-name { font-size: 16px; font-weight: 900; color: #ffffff; margin-bottom: 4px; }
-    .group-item-numbers { font-size: 14px; font-weight: 800; color: #facc15; }
+    .group-item-name { font-size: 17px; font-weight: 900; color: #ffffff; margin-bottom: 4px; }
+    .group-item-numbers { font-size: 15px; font-weight: 800; color: #facc15; }
 
-    /* Hướng dẫn thao tác tại bàn */
+    /* Checklist thao tác */
     .action-checklist {
-      background: #090d16;
+      background: #0b1120;
       border: 1px solid #1e293b;
+      border-left: 4px solid #38bdf8;
       border-radius: 8px;
-      padding: 10px 14px;
+      padding: 12px 14px;
       font-size: 13px;
-      line-height: 1.5;
-      color: #cbd5e1;
+      line-height: 1.6;
+      color: #e2e8f0;
     }
 
     /* Trạng thái Dừng / Hủy */
@@ -210,15 +216,14 @@
       50% { transform: scale(1.015); box-shadow: 0 0 25px rgba(220, 38, 38, 0.9); }
     }
     @keyframes alert-border {
-      0% { border-color: #f59e0b; }
-      100% { border-color: #ef4444; }
+      0% { border-color: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+      100% { border-color: #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Thống kê tổng quan -->
   <div class="dashboard-grid">
     <div class="stat-card">
       <div class="stat-label">SỐ NHÓM ĐÃ XUẤT HIỆN</div>
@@ -238,7 +243,6 @@
     </div>
   </div>
 
-  <!-- Thanh nhập liệu siêu tốc -->
   <div class="session-panel">
     <div class="control-row">
       <div class="input-box" style="max-width: 120px;">
@@ -254,7 +258,6 @@
       <button class="btn-reset" onclick="resetPhien()">LÀM MỚI BẢNG</button>
     </div>
 
-    <!-- Hàng ngang hiển thị các số vừa nhập -->
     <div class="history-stream-wrap">
       <div class="stream-label">DÃY SỐ VỪA RA:</div>
       <div class="ball-list" id="ballStream">
@@ -263,7 +266,7 @@
     </div>
   </div>
 
-  <!-- KHUNG CẢNH BÁO BÁO LỆNH TRUNG TÂM -->
+  <!-- KHUNG TRUNG TÂM -->
   <div class="action-hero hero-waiting" id="actionHero">
     <div id="heroDefaultView">
       <div class="hero-title" id="heroTitle">TRẠNG THÁI HIỆN TẠI</div>
@@ -271,7 +274,7 @@
       <div class="hero-sub" id="heroSub">Cần xuất hiện đủ ít nhất 4 nhóm khác nhau trước khi bắt đầu xét lặp lại.</div>
     </div>
 
-    <!-- KHUNG HIỂN THỊ TÁCH BIỆT KHI CÓ LỆNH CƯỢC -->
+    <!-- KHUNG TÁCH BIỆT: NHÓM CŨ VS NHÓM MỚI -->
     <div id="heroBetView" style="display: none;">
       <div class="hero-header-bar">
         <div class="hero-tag-main" id="betRoundTitle">🎯 TÍN HIỆU VÀO CƯỢC: 1 NHÓM LẶP LẠI</div>
@@ -287,7 +290,7 @@
           <div id="existingGroupsList"></div>
         </div>
 
-        <!-- Khối 2: Nhóm mới thêm vào (Cảnh báo chống sót) -->
+        <!-- Khối 2: Nhóm mới thêm vào -->
         <div class="block-new" id="newBlock">
           <div class="block-title-new">
             <span>⚠️ NHÓM MỚI XUẤT HIỆN (PHẢI ĐẶT CHIP MỚI):</span>
@@ -300,62 +303,20 @@
     </div>
   </div>
 
-  <!-- Trạng thái 8 Nhóm Thuần Việt -->
   <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #94a3b8;">TRẠNG THÁI 8 NHÓM THUẦN VIỆT:</div>
   <div class="groups-grid" id="groupsGrid"></div>
 </div>
 
 <script>
-// Định nghĩa 8 nhóm thuần Việt khép kín 37 số
 const GROUPS_CONFIG = {
-  "TCD": {
-    name: "THẤP - CHẴN - ĐỎ",
-    short: "TCĐ",
-    nums: [0, 12, 14, 16, 18],
-    color: "#ef4444"
-  },
-  "TLD": {
-    name: "THẤP - LẺ - ĐỎ",
-    short: "TLĐ",
-    nums: [1, 3, 5, 7, 9],
-    color: "#ef4444"
-  },
-  "CCD": {
-    name: "CAO - CHẴN - ĐỎ",
-    short: "CCĐ",
-    nums: [30, 32, 34, 36],
-    color: "#ef4444"
-  },
-  "CLD": {
-    name: "CAO - LẺ - ĐỎ",
-    short: "CLĐ",
-    nums: [19, 21, 23, 25, 27],
-    color: "#ef4444"
-  },
-  "TCDen": {
-    name: "THẤP - CHẴN - ĐEN",
-    short: "TCĐen",
-    nums: [2, 4, 6, 8, 10],
-    color: "#94a3b8"
-  },
-  "TLDen": {
-    name: "THẤP - LẺ - ĐEN",
-    short: "TLĐen",
-    nums: [11, 13, 15, 17],
-    color: "#94a3b8"
-  },
-  "CCDen": {
-    name: "CAO - CHẴN - ĐEN",
-    short: "CCĐen",
-    nums: [20, 22, 24, 26, 28],
-    color: "#94a3b8"
-  },
-  "CLDen": {
-    name: "CAO - LẺ - ĐEN",
-    short: "CLĐen",
-    nums: [29, 31, 33, 35],
-    color: "#94a3b8"
-  }
+  "TCD": { name: "THẤP - CHẴN - ĐỎ", short: "TCĐ", nums: [0, 12, 14, 16, 18], color: "#ef4444" },
+  "TLD": { name: "THẤP - LẺ - ĐỎ", short: "TLĐ", nums: [1, 3, 5, 7, 9], color: "#ef4444" },
+  "CCD": { name: "CAO - CHẴN - ĐỎ", short: "CCĐ", nums: [30, 32, 34, 36], color: "#ef4444" },
+  "CLD": { name: "CAO - LẺ - ĐỎ", short: "CLĐ", nums: [19, 21, 23, 25, 27], color: "#ef4444" },
+  "TCDen": { name: "THẤP - CHẴN - ĐEN", short: "TCĐen", nums: [2, 4, 6, 8, 10], color: "#94a3b8" },
+  "TLDen": { name: "THẤP - LẺ - ĐEN", short: "TLĐen", nums: [11, 13, 15, 17], color: "#94a3b8" },
+  "CCDen": { name: "CAO - CHẴN - ĐEN", short: "CCĐen", nums: [20, 22, 24, 26, 28], color: "#94a3b8" },
+  "CLDen": { name: "CAO - LẺ - ĐEN", short: "CLĐen", nums: [29, 31, 33, 35], color: "#94a3b8" }
 };
 
 const RED_NUMS = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
@@ -366,9 +327,7 @@ let groupHits = {};
 let recoveryTier = 1;
 let sessionNetProfit = 0;
 let isSessionStopped = false;
-
-// Mảng lưu danh sách các nhóm đã cược ở ván liền trước để phân biệt nhóm CŨ vs MỚI
-let lastBetActiveGroups = [];
+let lastBetActiveGroups = []; // Nhớ nhóm đã cược ván liền trước
 
 function initGroupHits() {
   groupHits = { TCD: 0, TLD: 0, CCD: 0, CLD: 0, TCDen: 0, TLDen: 0, CCDen: 0, CLDen: 0 };
@@ -430,7 +389,6 @@ function xacNhanSo() {
       return;
     } else {
       sessionNetProfit -= totalCashRisked;
-      // Cập nhật lại danh sách các nhóm đã cược cho ván tiếp theo so sánh
       lastBetActiveGroups = [...currentBetInfo.activeGroups];
     }
   }
@@ -512,7 +470,7 @@ function getBettingStatus() {
   const multTable = (recoveryTier === 1) ? { 1: 1, 2: 2, 3: 3 } : { 1: 2, 2: 4, 3: 6 };
   const unitPerNumber = multTable[repeaters.length];
 
-  // TÁCH NHÓM CŨ VÀ NHÓM MỚI
+  // TÁCH RÕ: NHÓM CŨ VS NHÓM MỚI
   const existingGroups = repeaters.filter(k => lastBetActiveGroups.includes(k));
   const newGroups = repeaters.filter(k => !lastBetActiveGroups.includes(k));
 
@@ -590,10 +548,10 @@ function renderApp() {
     document.getElementById("betRoundTitle").textContent = `🎯 CƯỢC ${state.repeaterCount} NHÓM LẶP LẠI (BẬC ${recoveryTier})`;
     document.getElementById("betMoneySummary").textContent = `VÀO: ${state.unitPerNumber} CHIP/SỐ (${moneyPerNum}$) • TỔNG: ${totalMoney}$`;
 
-    // 1. Render Nhóm Cũ (nếu có)
+    // 1. Nhóm Cũ đã cược ván trước
     const existingBlock = document.getElementById("existingBlock");
     const existingList = document.getElementById("existingGroupsList");
-    if (state.existingGroups.length > 0) {
+    if (state.existingGroups && state.existingGroups.length > 0) {
       existingBlock.style.display = "block";
       existingList.innerHTML = state.existingGroups.map(k => `
         <div class="group-item-badge">
@@ -605,27 +563,28 @@ function renderApp() {
       existingBlock.style.display = "none";
     }
 
-    // 2. Render Nhóm Mới (Cảnh báo chống đặt sót)
+    // 2. Nhóm Mới thêm vào
     const newBlock = document.getElementById("newBlock");
     const newList = document.getElementById("newGroupsList");
-    newList.innerHTML = state.newGroups.map(k => `
+    const targetNewList = (state.newGroups && state.newGroups.length > 0) ? state.newGroups : state.activeGroups;
+    newList.innerHTML = targetNewList.map(k => `
       <div class="group-item-badge" style="border: 1px solid #facc15;">
         <div class="group-item-name" style="color: #fef08a;">${GROUPS_CONFIG[k].name}</div>
         <div class="group-item-numbers" style="color: #ffffff;">👉 ĐẶT CÁC SỐ: <strong>${GROUPS_CONFIG[k].nums.join(", ")}</strong></div>
       </div>
     `).join("");
 
-    // 3. Render Checklist hướng dẫn thao tác
+    // 3. Checklist hướng dẫn thao tác
     const checklist = document.getElementById("actionChecklist");
-    if (state.existingGroups.length > 0) {
+    if (state.existingGroups && state.existingGroups.length > 0) {
       checklist.innerHTML = `
         <strong>⚡ THAO TÁC NHANH TẠI BÀN ĐỂ KHÔNG BỊ SÓT:</strong><br>
         1. Bấm nút <strong>"Cược lại" (Re-bet)</strong> trên bàn rồi nâng lên <strong>${state.unitPerNumber} chip</strong> cho các số của nhóm cũ.<br>
-        2. Rải thêm <strong>${state.unitPerNumber} chip</strong> vào các số mới: <span style="color:#fef08a; font-weight:bold;">${state.newGroups.map(k => GROUPS_CONFIG[k].nums.join(", ")).join("; ")}</span>.
+        2. Rải thêm <strong>${state.unitPerNumber} chip</strong> vào các số mới: <span style="color:#fef08a; font-weight:bold;">${targetNewList.map(k => GROUPS_CONFIG[k].nums.join(", ")).join("; ")}</span>.
       `;
     } else {
       checklist.innerHTML = `
-        <strong>⚡ THAO TÁC TẠI BÀN:</strong> Đặt <strong>${state.unitPerNumber} chip (${moneyPerNum}$)</strong> vào từng số của nhóm: <span style="color:#fef08a; font-weight:bold;">${state.allTargetNumbers.join(", ")}</span>.
+        <strong>⚡ THAO TÁC TẠI BÀN:</strong> Đặt <strong>${state.unitPerNumber} chip (${moneyPerNum}$)</strong> vào từng số: <span style="color:#fef08a; font-weight:bold;">${state.allTargetNumbers.join(", ")}</span>.
       `;
     }
 
