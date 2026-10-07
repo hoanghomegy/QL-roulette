@@ -27,7 +27,7 @@
     .pos { color: var(--win); }
     .neg { color: var(--lose); }
 
-    /* Thanh nhập liệu siêu tốc */
+    /* Thanh nhập liệu */
     .session-panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
     .control-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
     .input-box { flex: 1; min-width: 120px; }
@@ -40,7 +40,7 @@
     .btn-reset { background: #dc2626; color: #fff; }
     .btn-undo { background: #475569; color: #fff; }
 
-    /* Dải hiển thị bóng kết quả hàng ngang */
+    /* Dải hàng ngang dãy số vừa ra */
     .history-stream-wrap {
       margin-top: 12px;
       padding: 10px 14px;
@@ -73,47 +73,123 @@
     .ball-green { background: linear-gradient(135deg, #10b981, #065f46); border: 2px solid #6ee7b7; }
     .ball-newest { border: 2px solid #38bdf8 !important; transform: scale(1.15); animation: pulse-ball 1.2s infinite alternate; }
 
-    /* KHUNG BÁO LỆNH TRUNG TÂM (NỀN XANH - CHỮ TRẮNG TO HOẶC ĐỎ DỪNG) */
+    /* KHUNG BÁO LỆNH TRUNG TÂM */
     .action-hero {
       border-radius: 12px;
-      padding: 18px;
-      text-align: center;
+      padding: 16px;
       margin-bottom: 14px;
       transition: all 0.2s ease;
     }
     
-    /* Trạng thái 1: Quan sát / Chưa đủ điều kiện */
     .hero-waiting {
       background: #1e293b;
       border: 1px solid #334155;
+      text-align: center;
     }
     .hero-waiting .hero-title { font-size: 13px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
     .hero-waiting .hero-main { font-size: 22px; color: #f1f5f9; font-weight: 800; }
     .hero-waiting .hero-sub { font-size: 14px; color: #fbbf24; margin-top: 6px; font-weight: 600; }
 
-    /* Trạng thái 2: CÓ LỆNH VÀO CƯỢC (NỀN XANH - CHỮ TRẮNG TO RỰC) */
+    /* CÓ LỆNH VÀO CƯỢC */
     .hero-betting {
-      background: #1d4ed8 !important;
-      border: 2px solid #93c5fd !important;
-      box-shadow: 0 0 22px rgba(29, 78, 216, 0.7);
+      background: #0f172a !important;
+      border: 2px solid #38bdf8 !important;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
     }
-    .hero-betting .hero-title { font-size: 14px; color: #bfdbfe; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; }
-    .hero-betting .hero-main { font-size: 28px; color: #ffffff; font-weight: 900; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.4); }
-    .hero-betting .hero-numbers { font-size: 16px; color: #fef08a; font-weight: 800; margin-top: 6px; background: rgba(0,0,0,0.25); display: inline-block; padding: 4px 12px; border-radius: 20px; }
-    .hero-betting .hero-sub { font-size: 18px; color: #ffffff; font-weight: 800; margin-top: 8px; }
+    .hero-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+    .hero-tag-main { font-size: 16px; font-weight: 900; color: #38bdf8; text-transform: uppercase; }
+    .hero-money-summary { font-size: 15px; font-weight: 800; color: #facc15; }
 
-    /* Trạng thái 3: CẢNH BÁO STOP / HỦY PHIÊN (NỀN ĐỎ - CHỮ TRẮNG TO) */
+    /* BỐ CỤC TÁCH NHÓM CŨ VÀ NHÓM MỚI */
+    .split-groups-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    /* Khối Nhóm Cũ (Giữ & Rebet) */
+    .block-existing {
+      background: #1e293b;
+      border: 1px solid #475569;
+      border-top: 4px solid #38bdf8;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .block-title-existing {
+      font-size: 13px;
+      font-weight: 800;
+      color: #93c5fd;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    /* Khối Nhóm Mới (Cần Rải Thêm Chip) */
+    .block-new {
+      background: #451a03;
+      border: 2px solid #f59e0b;
+      border-top: 5px solid #fbbf24;
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+      animation: alert-border 1.5s infinite alternate;
+    }
+    .block-title-new {
+      font-size: 14px;
+      font-weight: 900;
+      color: #fef08a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .group-item-badge {
+      background: rgba(0,0,0,0.35);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+    }
+    .group-item-name { font-size: 16px; font-weight: 900; color: #ffffff; margin-bottom: 4px; }
+    .group-item-numbers { font-size: 14px; font-weight: 800; color: #facc15; }
+
+    /* Hướng dẫn thao tác tại bàn */
+    .action-checklist {
+      background: #090d16;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #cbd5e1;
+    }
+
+    /* Trạng thái Dừng / Hủy */
     .hero-stop {
       background: #dc2626 !important;
       border: 2px solid #ffffff !important;
       box-shadow: 0 0 22px rgba(220, 38, 38, 0.8);
       animation: pulse-stop 1.2s infinite;
+      text-align: center;
     }
     .hero-stop .hero-title { font-size: 14px; color: #fee2e2; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; }
-    .hero-stop .hero-main { font-size: 28px; color: #ffffff; font-weight: 900; }
-    .hero-stop .hero-sub { font-size: 16px; color: #ffffff; margin-top: 6px; font-weight: 700; }
+    .hero-stop .hero-main { font-size: 26px; color: #ffffff; font-weight: 900; }
+    .hero-stop .hero-sub { font-size: 15px; color: #ffffff; margin-top: 6px; font-weight: 700; }
 
-    /* Lưới giám sát trạng thái 8 Nhóm Thuần Việt */
+    /* Lưới giám sát 8 Nhóm */
     .groups-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-bottom: 14px; }
     .group-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; position: relative; }
     .group-card.active-bet { border: 2px solid #38bdf8; background: #0c4a6e; }
@@ -132,6 +208,10 @@
     @keyframes pulse-stop {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.015); box-shadow: 0 0 25px rgba(220, 38, 38, 0.9); }
+    }
+    @keyframes alert-border {
+      0% { border-color: #f59e0b; }
+      100% { border-color: #ef4444; }
     }
   </style>
 </head>
@@ -185,10 +265,39 @@
 
   <!-- KHUNG CẢNH BÁO BÁO LỆNH TRUNG TÂM -->
   <div class="action-hero hero-waiting" id="actionHero">
-    <div class="hero-title" id="heroTitle">TRẠNG THÁI HIỆN TẠI</div>
-    <div class="hero-main" id="heroMain">GIAI ĐOẠN QUAN SÁT (CHƯA VÀO TIỀN)</div>
-    <div id="heroNumbersWrap" style="display: none;"><span class="hero-numbers" id="heroNumbers"></span></div>
-    <div class="hero-sub" id="heroSub">Cần xuất hiện đủ ít nhất 4 nhóm khác nhau trước khi bắt đầu xét lặp lại.</div>
+    <div id="heroDefaultView">
+      <div class="hero-title" id="heroTitle">TRẠNG THÁI HIỆN TẠI</div>
+      <div class="hero-main" id="heroMain">GIAI ĐOẠN QUAN SÁT (CHƯA VÀO TIỀN)</div>
+      <div class="hero-sub" id="heroSub">Cần xuất hiện đủ ít nhất 4 nhóm khác nhau trước khi bắt đầu xét lặp lại.</div>
+    </div>
+
+    <!-- KHUNG HIỂN THỊ TÁCH BIỆT KHI CÓ LỆNH CƯỢC -->
+    <div id="heroBetView" style="display: none;">
+      <div class="hero-header-bar">
+        <div class="hero-tag-main" id="betRoundTitle">🎯 TÍN HIỆU VÀO CƯỢC: 1 NHÓM LẶP LẠI</div>
+        <div class="hero-money-summary" id="betMoneySummary">1 CHIP / MỖI SỐ</div>
+      </div>
+
+      <div class="split-groups-grid">
+        <!-- Khối 1: Nhóm cũ giữ lại -->
+        <div class="block-existing" id="existingBlock" style="display: none;">
+          <div class="block-title-existing">
+            <span>🔄 NHÓM ĐÃ CƯỢC VÁN TRƯỚC (BẤM RE-BET):</span>
+          </div>
+          <div id="existingGroupsList"></div>
+        </div>
+
+        <!-- Khối 2: Nhóm mới thêm vào (Cảnh báo chống sót) -->
+        <div class="block-new" id="newBlock">
+          <div class="block-title-new">
+            <span>⚠️ NHÓM MỚI XUẤT HIỆN (PHẢI ĐẶT CHIP MỚI):</span>
+          </div>
+          <div id="newGroupsList"></div>
+        </div>
+      </div>
+
+      <div class="action-checklist" id="actionChecklist"></div>
+    </div>
   </div>
 
   <!-- Trạng thái 8 Nhóm Thuần Việt -->
@@ -202,7 +311,7 @@ const GROUPS_CONFIG = {
   "TCD": {
     name: "THẤP - CHẴN - ĐỎ",
     short: "TCĐ",
-    nums: [0, 12, 14, 16, 18], // Đã bổ sung số 0
+    nums: [0, 12, 14, 16, 18],
     color: "#ef4444"
   },
   "TLD": {
@@ -254,9 +363,12 @@ const RED_NUMS = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
 let baseUnit = 1;
 let historyNumbers = [];
 let groupHits = {};
-let recoveryTier = 1; // 1: Bình thường (1-2-3u), 2: Gỡ vốn (2-4-6u)
+let recoveryTier = 1;
 let sessionNetProfit = 0;
 let isSessionStopped = false;
+
+// Mảng lưu danh sách các nhóm đã cược ở ván liền trước để phân biệt nhóm CŨ vs MỚI
+let lastBetActiveGroups = [];
 
 function initGroupHits() {
   groupHits = { TCD: 0, TLD: 0, CCD: 0, CLD: 0, TCDen: 0, TLDen: 0, CCDen: 0, CLDen: 0 };
@@ -275,7 +387,6 @@ function capNhatBaseUnit() {
   renderApp();
 }
 
-// Bắt phím Enter để gõ số liên tục không cần chạm chuột
 document.getElementById("numInput").addEventListener("keydown", function(e) {
   if (e.key === "Enter") xacNhanSo();
 });
@@ -296,7 +407,6 @@ function xacNhanSo() {
   const num = parseInt(val);
   const gKey = findGroupKeyByNumber(num);
 
-  // Đánh giá kết quả của lệnh vừa cược (nếu ván trước đang có lệnh)
   const currentBetInfo = getBettingStatus();
   if (currentBetInfo.isBetting) {
     const isWin = currentBetInfo.activeGroups.includes(gKey);
@@ -304,28 +414,27 @@ function xacNhanSo() {
     const totalCashRisked = totalChipsBet * baseUnit;
 
     if (isWin) {
-      // Đánh trúng 1 con số: tỷ lệ Roulette trả 1 ăn 36 (bao gồm gốc)
-      // Tiền ăn = (36 * chips cược vào số đó - tổng số chip rải trên bàn) * baseUnit
       const winProfit = (36 * currentBetInfo.unitPerNumber - totalChipsBet) * baseUnit;
       sessionNetProfit += winProfit;
 
       alert(`🎉 CHÚC MỪNG: TRÚNG SỐ ${num} THUỘC NHÓM ${GROUPS_CONFIG[gKey].name}!\nLãi ván này: +${winProfit}$ -> Thu lãi và Reset bảng quan sát.`);
       
-      // Nếu đang ở bậc gỡ vốn mà kéo lại được thì hạ về bậc 1
       if (recoveryTier === 2 && sessionNetProfit >= 0) {
         recoveryTier = 1;
       }
 
+      lastBetActiveGroups = [];
       resetPhienNhungGiuLoiNhuan();
       inp.value = "";
       inp.focus();
       return;
     } else {
       sessionNetProfit -= totalCashRisked;
+      // Cập nhật lại danh sách các nhóm đã cược cho ván tiếp theo so sánh
+      lastBetActiveGroups = [...currentBetInfo.activeGroups];
     }
   }
 
-  // Cập nhật số vào lịch sử và tăng đếm nhóm
   historyNumbers.unshift(num);
   groupHits[gKey]++;
 
@@ -347,6 +456,7 @@ function resetPhien() {
   if (!confirm("Bạn có chắc muốn làm mới toàn bộ bảng theo dõi?")) return;
   historyNumbers = [];
   initGroupHits();
+  lastBetActiveGroups = [];
   isSessionStopped = false;
   renderApp();
   document.getElementById("numInput").focus();
@@ -355,17 +465,16 @@ function resetPhien() {
 function resetPhienNhungGiuLoiNhuan() {
   historyNumbers = [];
   initGroupHits();
+  lastBetActiveGroups = [];
   isSessionStopped = false;
   renderApp();
 }
 
-// XÁC ĐỊNH TRẠNG THÁI VÀO LỆNH / QUẢN LÝ TIỀN
 function getBettingStatus() {
   const uniqueCount = Object.values(groupHits).filter(v => v > 0).length;
   const repeaters = Object.entries(groupHits).filter(([k, v]) => v >= 2).map(([k]) => k);
   const maxHitInAnyGroup = Math.max(...Object.values(groupHits));
 
-  // 1. ĐIỀU KIỆN HỦY PHIÊN BẮT BUỘC: Chưa đủ 4 nhóm mà có nhóm đã hit 3 lần
   if (uniqueCount < 4 && maxHitInAnyGroup >= 3) {
     return {
       status: "CANCEL_SESSION",
@@ -374,7 +483,6 @@ function getBettingStatus() {
     };
   }
 
-  // 2. ĐIỀU KIỆN QUAN SÁT: Chưa đủ 4 nhóm khác nhau
   if (uniqueCount < 4) {
     return {
       status: "OBSERVING",
@@ -384,7 +492,6 @@ function getBettingStatus() {
     };
   }
 
-  // 3. ĐÃ ĐỦ 4 NHÓM KHÁC NHAU: Bắt đầu xét Repeaters
   if (repeaters.length === 0) {
     return {
       status: "WAITING_REPEATER",
@@ -394,7 +501,6 @@ function getBettingStatus() {
     };
   }
 
-  // 4. CẮT LỖ CHU KỲ (STOP-LOSS): Xuất hiện 4 Repeaters
   if (repeaters.length >= 4) {
     return {
       status: "STOP_LOSS",
@@ -403,11 +509,13 @@ function getBettingStatus() {
     };
   }
 
-  // 5. CÓ LỆNH VÀO CƯỢC HỢP LỆ (1, 2 hoặc 3 Repeaters)
   const multTable = (recoveryTier === 1) ? { 1: 1, 2: 2, 3: 3 } : { 1: 2, 2: 4, 3: 6 };
   const unitPerNumber = multTable[repeaters.length];
 
-  // Tính tổng số con số cần rải chip
+  // TÁCH NHÓM CŨ VÀ NHÓM MỚI
+  const existingGroups = repeaters.filter(k => lastBetActiveGroups.includes(k));
+  const newGroups = repeaters.filter(k => !lastBetActiveGroups.includes(k));
+
   let totalNumbersCovered = 0;
   let allTargetNumbers = [];
   repeaters.forEach(k => {
@@ -422,6 +530,8 @@ function getBettingStatus() {
     status: "BET",
     isBetting: true,
     activeGroups: repeaters,
+    existingGroups: existingGroups,
+    newGroups: newGroups,
     repeaterCount: repeaters.length,
     unitPerNumber: unitPerNumber,
     totalNumbersCovered: totalNumbersCovered,
@@ -430,7 +540,6 @@ function getBettingStatus() {
   };
 }
 
-// CẬP NHẬT GIAO DIỆN SIÊU TỐC
 function renderApp() {
   const state = getBettingStatus();
   const uniqueCount = Object.values(groupHits).filter(v => v > 0).length;
@@ -447,52 +556,88 @@ function renderApp() {
   renderBallStream();
 
   const hero = document.getElementById("actionHero");
+  const heroDefault = document.getElementById("heroDefaultView");
+  const heroBet = document.getElementById("heroBetView");
   const heroTitle = document.getElementById("heroTitle");
   const heroMain = document.getElementById("heroMain");
   const heroSub = document.getElementById("heroSub");
-  const heroNumsWrap = document.getElementById("heroNumbersWrap");
-  const heroNums = document.getElementById("heroNumbers");
 
-  // Xử lý giao diện Hero Box
   if (state.status === "CANCEL_SESSION") {
     isSessionStopped = true;
     hero.className = "action-hero hero-stop";
+    heroDefault.style.display = "block";
+    heroBet.style.display = "none";
     heroTitle.textContent = "CẢNH BÁO VI PHẠM ĐIỀU KIỆN";
     heroMain.textContent = "HỦY PHIÊN: CÓ NHÓM RA LẦN 3 KHI CHƯA ĐỦ 4 NHÓM!";
     heroSub.textContent = "Bàn đang có dấu hiệu bệt/lệch nhóm. Bấm nút [LÀM MỚI BẢNG] để quan sát lại từ đầu.";
-    heroNumsWrap.style.display = "none";
   } else if (state.status === "STOP_LOSS") {
     isSessionStopped = true;
-    recoveryTier = 2; // Tự động nâng bậc gỡ vốn cho chu kỳ sau
+    recoveryTier = 2;
     hero.className = "action-hero hero-stop";
+    heroDefault.style.display = "block";
+    heroBet.style.display = "none";
     heroTitle.textContent = "CẮT LỖ CHU KỲ (STOP-LOSS)";
     heroMain.textContent = "DỪNG LỆNH: ĐÃ CHẠM 4 NHÓM LẶP LẠI!";
     heroSub.textContent = "Chấp nhận cắt lỗ chu kỳ này. Hãy bấm [LÀM MỚI BẢNG], hệ thống sẽ chuyển sang Bậc 2 (2-4-6 units) để gỡ.";
-    heroNumsWrap.style.display = "none";
   } else if (state.status === "BET") {
     hero.className = "action-hero hero-betting";
-    heroTitle.textContent = `🎯 TÍN HIỆU VÀO CƯỢC: ${state.repeaterCount} NHÓM LẶP LẠI (BẬC ${recoveryTier})`;
-    
-    // Nêu rõ hẳn tên tiếng Việt của từng nhóm, không viết tắt
-    const groupNamesViet = state.activeGroups.map(k => `[ ${GROUPS_CONFIG[k].name} ]`).join(" + ");
-    heroMain.textContent = `CƯỢC NHÓM: ${groupNamesViet}`;
-    
-    heroNumsWrap.style.display = "block";
-    heroNums.textContent = `Bao phủ ${state.totalNumbersCovered} số: ${state.allTargetNumbers.join(", ")}`;
+    heroDefault.style.display = "none";
+    heroBet.style.display = "block";
 
     const moneyPerNum = state.unitPerNumber * baseUnit;
     const totalMoney = state.totalChips * baseUnit;
-    heroSub.innerHTML = `VÀO: <strong>${state.unitPerNumber} UNIT (${moneyPerNum}$)</strong> TRÊN MỖI SỐ &nbsp;|&nbsp; TỔNG TIỀN VÁN NÀY: <strong>${totalMoney}$</strong>`;
+
+    document.getElementById("betRoundTitle").textContent = `🎯 CƯỢC ${state.repeaterCount} NHÓM LẶP LẠI (BẬC ${recoveryTier})`;
+    document.getElementById("betMoneySummary").textContent = `VÀO: ${state.unitPerNumber} CHIP/SỐ (${moneyPerNum}$) • TỔNG: ${totalMoney}$`;
+
+    // 1. Render Nhóm Cũ (nếu có)
+    const existingBlock = document.getElementById("existingBlock");
+    const existingList = document.getElementById("existingGroupsList");
+    if (state.existingGroups.length > 0) {
+      existingBlock.style.display = "block";
+      existingList.innerHTML = state.existingGroups.map(k => `
+        <div class="group-item-badge">
+          <div class="group-item-name">${GROUPS_CONFIG[k].name}</div>
+          <div class="group-item-numbers">Các số: ${GROUPS_CONFIG[k].nums.join(", ")}</div>
+        </div>
+      `).join("");
+    } else {
+      existingBlock.style.display = "none";
+    }
+
+    // 2. Render Nhóm Mới (Cảnh báo chống đặt sót)
+    const newBlock = document.getElementById("newBlock");
+    const newList = document.getElementById("newGroupsList");
+    newList.innerHTML = state.newGroups.map(k => `
+      <div class="group-item-badge" style="border: 1px solid #facc15;">
+        <div class="group-item-name" style="color: #fef08a;">${GROUPS_CONFIG[k].name}</div>
+        <div class="group-item-numbers" style="color: #ffffff;">👉 ĐẶT CÁC SỐ: <strong>${GROUPS_CONFIG[k].nums.join(", ")}</strong></div>
+      </div>
+    `).join("");
+
+    // 3. Render Checklist hướng dẫn thao tác
+    const checklist = document.getElementById("actionChecklist");
+    if (state.existingGroups.length > 0) {
+      checklist.innerHTML = `
+        <strong>⚡ THAO TÁC NHANH TẠI BÀN ĐỂ KHÔNG BỊ SÓT:</strong><br>
+        1. Bấm nút <strong>"Cược lại" (Re-bet)</strong> trên bàn rồi nâng lên <strong>${state.unitPerNumber} chip</strong> cho các số của nhóm cũ.<br>
+        2. Rải thêm <strong>${state.unitPerNumber} chip</strong> vào các số mới: <span style="color:#fef08a; font-weight:bold;">${state.newGroups.map(k => GROUPS_CONFIG[k].nums.join(", ")).join("; ")}</span>.
+      `;
+    } else {
+      checklist.innerHTML = `
+        <strong>⚡ THAO TÁC TẠI BÀN:</strong> Đặt <strong>${state.unitPerNumber} chip (${moneyPerNum}$)</strong> vào từng số của nhóm: <span style="color:#fef08a; font-weight:bold;">${state.allTargetNumbers.join(", ")}</span>.
+      `;
+    }
+
   } else {
-    // Trạng thái quan sát hoặc chờ repeater
     hero.className = "action-hero hero-waiting";
+    heroDefault.style.display = "block";
+    heroBet.style.display = "none";
     heroTitle.textContent = "TRẠNG THÁI HIỆN TẠI";
     heroMain.textContent = state.status === "OBSERVING" ? "GIAI ĐOẠN QUAN SÁT (CHƯA VÀO TIỀN)" : "ĐÃ ĐỦ 4 NHÓM - CHỜ NHÓM LẶP LẠI";
     heroSub.textContent = state.msg;
-    heroNumsWrap.style.display = "none";
   }
 
-  // Render lưới 8 nhóm
   renderGroupsGrid(state.activeGroups || []);
 }
 
